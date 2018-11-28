@@ -1,0 +1,513 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.aotain.serviceapi.server.dao.preinput.PreCommonMapper">
+
+	<insert id="writeLog" parameterType="com.aotain.cu.serviceapi.model.BaseModel">
+		
+		<selectKey resultType="java.lang.Long" keyProperty="submitId" order="BEFORE">
+			SELECT SEQ_WAIT_SUBMIT_ID.nextval submitId FROM dual
+		</selectKey>
+		INSERT INTO WAIT_ISMS_SUBMIT_REPORTLOG(SUBMIT_ID,DEAL_FLAG)VALUES (#{submitId},0)
+	</insert>
+	
+	
+	<insert id="writeUserLog" parameterType="com.aotain.cu.serviceapi.model.UserInformation">
+		
+		<selectKey resultType="java.lang.Long" keyProperty="userSeqId" order="BEFORE">
+			SELECT SEQ_WAIT_USERSEQ_ID.nextval userSeqId FROM dual
+		</selectKey>
+		
+		insert into WAIT_ISMS_BASE_USER
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			USERSEQ_ID,
+			SUBMIT_ID,
+			USERID,
+			<if test="jyzId != null">
+				JYZID,
+			</if>
+			<if test="userCode!=null">
+				USERCODE,
+			</if>
+			<if test="nature != null">
+				NATURE,
+			</if>
+			<if test="unitName != null">
+				UNITNAME,
+			</if>
+			<if test="unitNature != null">
+				UNITNATURE,
+			</if>
+			<if test="idType != null">
+				IDTYPE ,
+			</if>
+			<if test="idNumber != null">
+				IDNUMBER ,
+			</if>
+			<if test="officerEmail != null">
+				OFFICER_EMAIL,
+			</if>
+			<if test="officerMobile != null">
+				OFFICER_MOBILE,
+			</if>
+			<if test="officerTelphone != null">
+				OFFICER_TEL,
+			</if>
+			<if test="officerId != null">
+				OFFICER_ID,
+			</if>
+			<if test="officerIdType != null">
+				OFFICER_IDTYPE,
+			</if>
+			<if test="officerName != null">
+				OFFICER_NAME,
+			</if>
+			<if test="unitAddress != null">
+				UNITADD,
+			</if>
+			<if test="unitZipCode != null">
+				ZIPCODE,
+			</if>
+			<if test="registeTime != null">
+				REGISTERTIME,
+			</if>
+			<if test="serviceRegTime != null">
+				SERVERREGISTERTIME,
+			</if>
+			<if test="createTime != null">
+				CREATE_TIME,
+			</if>
+			<if test="updateTime != null">
+				UPDATE_TIME,
+			</if>
+			<if test="createUserId != null">
+				CREATE_USERID,
+			</if>
+			<if test="updateUserId != null">
+				UPDATE_USERID,
+			</if>
+			<!--<if test="unitAddressProvinceCode!=null">-->
+			<!--UNITADDPROVINCEC,-->
+			<!--</if>-->
+			<!--<if test="unitAddressProvinceName!=null">-->
+			<!--UNITADDPROVINCEN,-->
+			<!--</if>-->
+			<!--<if test="unitAddressCityCode!=null">-->
+			<!--UNITADDCITYC,-->
+			<!--</if>-->
+			<!--<if test="unitAddressCityName!=null">-->
+			<!--UNITADDCITYN,-->
+			<!--</if>-->
+			<!--<if test="unitAddressAreaCode!=null">-->
+			<!--UNITADDAREAC,-->
+			<!--</if>-->
+			<!--<if test="unitAddressAreaName!=null">-->
+			<!--UNITADDAREAN,-->
+			<!--</if>-->
+			<if test="areaCode!=null">
+				SUBORDINATEUNIT_AREACODE,
+			</if>
+			<if test="identity!=null">
+				IDENTIFY,
+			</if>
+			<if test="operateType!=null">
+				CZLX,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			#{userSeqId},
+			#{submitId},
+			#{userId},
+			<if test="jyzId != null">
+				#{jyzId},
+			</if>
+			<if test="userCode!=null">
+				#{userCode},
+			</if>
+			<if test="nature != null">
+				#{nature},
+			</if>
+			<if test="unitName != null">
+				#{unitName},
+			</if>
+			<if test="unitNature != null">
+				#{unitNature},
+			</if>
+			<if test="idType != null">
+				#{idType},
+			</if>
+			<if test="idNumber != null">
+				#{idNumber},
+			</if>
+			<if test="officerEmail != null">
+				#{officerEmail},
+			</if>
+			<if test="officerMobile != null">
+				#{officerMobile},
+			</if>
+			<if test="officerTelphone != null">
+				#{officerTelphone},
+			</if>
+			<if test="officerId != null">
+				#{officerId},
+			</if>
+			<if test="officerIdType != null">
+				#{officerIdType},
+			</if>
+			<if test="officerName != null">
+				#{officerName},
+			</if>
+			<if test="unitAddress != null">
+				#{unitAddress},
+			</if>
+			<if test="unitZipCode != null">
+				#{unitZipCode},
+			</if>
+			<if test="registeTime != null">
+				#{registeTime},
+			</if>
+			<if test="serviceRegTime != null">
+				#{serviceRegTime},
+			</if>
+			<if test="createTime != null">
+				#{createTime},
+			</if>
+			<if test="updateTime != null">
+				#{updateTime},
+			</if>
+			<if test="createUserId != null">
+				#{createUserId},
+			</if>
+			<if test="updateUserId != null">
+				#{updateUserId},
+			</if>
+			<!--<if test="unitAddressProvinceCode!=null">-->
+			<!--#{unitAddressProvinceCode},-->
+			<!--</if>-->
+			<!--<if test="unitAddressProvinceName!=null">-->
+			<!--#{unitAddressProvinceName},-->
+			<!--</if>-->
+			<!--<if test="unitAddressCityCode!=null">-->
+			<!--#{unitAddressCityCode},-->
+			<!--</if>-->
+			<!--<if test="unitAddressCityName!=null">-->
+			<!--#{unitAddressCityName},-->
+			<!--</if>-->
+			<!--<if test="unitAddressAreaCode!=null">-->
+			<!--#{unitAddressAreaCode},-->
+			<!--</if>-->
+			<!--<if test="unitAddressAreaName!=null">-->
+			<!--#{unitAddressAreaName},-->
+			<!--</if>-->
+			<if test="areaCode!=null">
+				#{areaCode},
+			</if>
+			<if test="identity!=null">
+				#{identity},
+			</if>
+			<if test="operateType!=null">
+				#{operateType},
+			</if>
+		</trim>
+	</insert>
+	
+	<insert id="writeUserBandLog" parameterType="com.aotain.cu.serviceapi.model.UserBandwidthInformation">
+		insert into WAIT_ISMS_BASE_USER_BANDWIDTH
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			USERSEQ_ID,
+			HHID,
+			<if test="userId != null">
+				USERID,
+			</if>
+			<if test="houseId != null">
+				HOUSEID,
+			</if>
+			<if test="distributeTime != null">
+				DISTRIBUTETIME,
+			</if>
+			<if test="bandWidth != null">
+				BANDWIDTH,
+			</if>
+			<if test="createTime != null">
+				CREATE_TIME,
+			</if>
+			<if test="updateTime != null">
+				UPDATE_TIME,
+			</if>
+			<if test="createUserId != null">
+				CREATE_USERID,
+			</if>
+			<if test="updateUserId != null">
+				UPDATE_USERID,
+			</if>
+			<if test="operateType">
+				CZLX,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			#{userSeqId},
+			#{hhId},
+			<if test="userId != null">
+				#{userId},
+			</if>
+			<if test="houseId != null">
+				#{houseId},
+			</if>
+			<if test="distributeTime != null">
+				#{distributeTime},
+			</if>
+			<if test="bandWidth != null">
+				#{bandWidth},
+			</if>
+			<if test="createTime != null">
+				#{createTime},
+			</if>
+			<if test="updateTime != null">
+				#{updateTime},
+			</if>
+			<if test="createUserId != null">
+				#{createUserId},
+			</if>
+			<if test="updateUserId != null">
+				#{updateUserId},
+			</if>
+			<if test="operateType">
+				#{operateType},
+			</if>
+		</trim>
+	</insert>
+	
+	<insert id="writeUserServiceLog" parameterType="com.aotain.cu.serviceapi.model.UserServiceInformation">
+		insert into WAIT_ISMS_BASE_USER_SERVICE
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			USERSEQ_ID,
+			SERVICEID,
+			<if test="userId != null">
+				USERID,
+			</if>
+			<if test="serviceContent != null">
+				SERVICECONTENT,
+			</if>
+			<if test="registerId != null">
+				REGID,
+			</if>
+			<if test="setmode != null">
+				SETMODE,
+			</if>
+			<if test="serviceType != null">
+				SERVICETYPE,
+			</if>
+			<if test="business != null">
+				BUSINESS ,
+			</if>
+			<if test="regType != null">
+				REGTYPE,
+			</if>
+			<if test="areaCode!=null">
+				SUBORDINATEUNIT_AREACODE,
+			</if>
+			<if test="operateType!=null">
+				CZLX,
+			</if>
+			<if test="createTime != null">
+				CREATE_TIME ,
+			</if>
+			<if test="updateTime != null">
+				UPDATE_TIME,
+			</if>
+			<if test="createUserId != null">
+				CREATE_USERID,
+			</if>
+			<if test="updateUserId != null">
+				UPDATE_USERID,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			#{userSeqId},
+			#{serviceId},
+			<if test="userId != null">
+				#{userId},
+			</if>
+			<if test="serviceContent != null">
+				#{serviceContent},
+			</if>
+			<if test="registerId != null">
+				#{registerId},
+			</if>
+			<if test="setmode != null">
+				#{setmode},
+			</if>
+			<if test="serviceType != null">
+				#{serviceType},
+			</if>
+			<if test="business != null">
+				#{business} ,
+			</if>
+			<if test="regType != null">
+				#{regType},
+			</if>
+			<if test="areaCode!=null">
+				#{areaCode},
+			</if>
+			<if test="operateType!=null">
+				#{operateType},
+			</if>
+			<if test="createTime != null">
+				#{createTime} ,
+			</if>
+			<if test="updateTime != null">
+				#{updateTime},
+			</if>
+			<if test="createUserId != null">
+				#{createUserId},
+			</if>
+			<if test="updateUserId != null">
+				#{updateUserId},
+			</if>
+		</trim>
+	</insert>
+	
+	<insert id="writeUserServiceDomainLog" parameterType="com.aotain.cu.serviceapi.model.ServiceDomainInformation">
+		insert into WAIT_ISMS_BASE_SERVICE_DOMAIN
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			USERSEQ_ID,
+			DOMAINID,
+			<if test="serviceId != null">
+				SERVICEID,
+			</if>
+			<if test="userId!=null">
+				USERID,
+			</if>
+			<if test="domainName != null">
+				DOMAINNAME,
+			</if>
+			<if test="createTime != null">
+				CREATE_TIME,
+			</if>
+			<if test="updateTime != null">
+				UPDATE_TIME,
+			</if>
+			<if test="createUserId != null">
+				CREATE_USERID ,
+			</if>
+			<if test="updateUserId != null">
+				UPDATE_USERID,
+			</if>
+			<if test="operateType!=null">
+				CZLX,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			#{userSeqId},
+			#{domainId},
+			<if test="serviceId != null">
+				#{serviceId},
+			</if>
+			<if test="userId!=null">
+				#{userId},
+			</if>
+			<if test="domainName != null">
+				#{domainName},
+			</if>
+			<if test="createTime != null">
+				#{createTime},
+			</if>
+			<if test="updateTime != null">
+				#{updateTime},
+			</if>
+			<if test="createUserId != null">
+				#{createUserId} ,
+			</if>
+			<if test="updateUserId != null">
+				#{updateUserId},
+			</if>
+			<if test="operateType!=null">
+				#{operateType},
+			</if>
+		</trim>
+	</insert>
+	
+	
+	<insert id="writeUserVirtualLog" parameterType="com.aotain.cu.serviceapi.model.UserVirtualInformation">
+		insert into WAIT_ISMS_BASE_USER_VIRTUAL
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			USERSEQ_ID,
+			VIRTUALID,
+			<if test="userId != null">
+				USERID,
+			</if>
+			<if test="houseId != null">
+				HOUSEID,
+			</if>
+			<if test="name != null">
+				VIRTUALHOST_NAME,
+			</if>
+			<if test="status != null">
+				VIRTUALHOST_STATE,
+			</if>
+			<if test="type != null">
+				VIRTUALHOST_TYPE ,
+			</if>
+			<if test="networkAddress != null">
+				NETWORK_ADDRESS,
+			</if>
+			<if test="mgnAddress != null">
+				MGN_ADDRESS,
+			</if>
+			<if test="createTime != null">
+				CREATE_TIME,
+			</if>
+			<if test="updateTime != null">
+				UPDATE_TIME,
+			</if>
+			<if test="createUserId != null">
+				CREATE_USERID ,
+			</if>
+			<if test="updateUserId != null">
+				UPDATE_USERID ,
+			</if>
+			<if test="operateType!=null">
+				CZLX,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			#{userSeqId},
+			#{virtualId},
+			<if test="userId != null">
+				#{userId},
+			</if>
+			<if test="houseId != null">
+				#{houseId},
+			</if>
+			<if test="name != null">
+				#{name},
+			</if>
+			<if test="status != null">
+				#{status},
+			</if>
+			<if test="type != null">
+				#{type} ,
+			</if>
+			<if test="networkAddress != null">
+				#{networkAddress},
+			</if>
+			<if test="mgnAddress != null">
+				#{mgnAddress},
+			</if>
+			<if test="createTime != null">
+				#{createTime},
+			</if>
+			<if test="updateTime != null">
+				#{updateTime},
+			</if>
+			<if test="createUserId != null">
+				#{createUserId} ,
+			</if>
+			<if test="updateUserId != null">
+				#{updateUserId} ,
+			</if>
+			<if test="operateType!=null">
+				#{operateType},
+			</if>
+		</trim>
+	</insert>
+</mapper>

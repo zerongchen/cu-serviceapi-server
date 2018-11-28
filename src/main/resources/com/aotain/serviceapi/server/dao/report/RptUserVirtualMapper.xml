@@ -1,0 +1,262 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.aotain.serviceapi.server.dao.report.RptUserVirtualMapper">
+  <resultMap id="BaseResultMap" type="com.aotain.cu.serviceapi.model.UserVirtualInformation">
+    <id column="VIRTUALID" jdbcType="DECIMAL" property="virtualId" />
+    <result column="USERID" jdbcType="DECIMAL" property="userId" />
+    <result column="HOUSEID" jdbcType="DECIMAL" property="houseId" />
+    <result column="VIRTUALHOST_NAME" jdbcType="VARCHAR" property="name" />
+    <result column="VIRTUALHOST_STATE" jdbcType="DECIMAL" property="status" />
+    <result column="VIRTUALHOST_TYPE" jdbcType="DECIMAL" property="type" />
+    <result column="NETWORK_ADDRESS" jdbcType="VARCHAR" property="networkAddress" />
+    <result column="MGN_ADDRESS" jdbcType="OTHER" property="mgnAddress" />
+    <result column="CREATE_TIME" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="UPDATE_TIME" jdbcType="TIMESTAMP" property="updateTime" />
+    <result column="CREATE_USERID" jdbcType="DECIMAL" property="createUserId" />
+    <result column="UPDATE_USERID" jdbcType="DECIMAL" property="updateUserId" />
+  </resultMap>
+  <resultMap id="BaseResultMap2" type="com.aotain.cu.serviceapi.dto.UserVirtualInformationDTO">
+    <id column="VIRTUALID" jdbcType="DECIMAL" property="virtualId" />
+    <result column="USERID" jdbcType="DECIMAL" property="userId" />
+    <result column="HOUSEID" jdbcType="DECIMAL" property="houseId" />
+    <result column="VIRTUALHOST_NAME" jdbcType="VARCHAR" property="name" />
+    <result column="VIRTUALHOST_STATE" jdbcType="DECIMAL" property="status" />
+    <result column="VIRTUALHOST_TYPE" jdbcType="DECIMAL" property="type" />
+    <result column="NETWORK_ADDRESS" jdbcType="VARCHAR" property="networkAddress" />
+    <result column="MGN_ADDRESS" jdbcType="OTHER" property="mgnAddress" />
+    <result column="CREATE_TIME" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="UPDATE_TIME" jdbcType="TIMESTAMP" property="updateTime" />
+    <result column="CREATE_USERID" jdbcType="DECIMAL" property="createUserId" />
+    <result column="UPDATE_USERID" jdbcType="DECIMAL" property="updateUserId" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    VIRTUALID, USERID, HOUSEID, VIRTUALHOST_NAME, VIRTUALHOST_STATE, VIRTUALHOST_TYPE, 
+    NETWORK_ADDRESS, MGN_ADDRESS, CREATE_TIME, UPDATE_TIME, CREATE_USERID, UPDATE_USERID
+  </sql>
+
+  <select id="getDtoList" parameterType="com.aotain.cu.serviceapi.dto.UserVirtualInformationDTO" resultMap="BaseResultMap2">
+    select t2.unitname unitName,t3.housename houseName,t1.* from rpt_isms_base_user_virtual t1
+    left join rpt_isms_base_user t2 on t1.userid=t2.userid
+    left join RPT_ISMS_BASE_HOUSE t3 on t1.houseid=t3.houseid
+    where 1=1
+    <if test="userId != null">
+        AND  t1.USERID = #{userId}
+    </if>
+    <!--
+    <if test="authIdentities != null and authIdentities != '' ">
+       	AND t1.USERID in ( 
+       		select userid from rpt_isms_base_user where split_areacode(IDENTIFY, #{authIdentities}) = 1
+       	)
+    </if>
+    -->
+    AND t1.USERID in (
+      select userid from RPT_ISMS_BASE_USER
+      where 1= 1
+      <if test="authIdentities != null and authIdentities != '' ">
+        and split_areacode(IDENTIFY, #{authIdentities}) = 1
+      </if>
+      <if test="areaCodes != null and areaCodes != '' ">
+        and split_areacode(SUBORDINATEUNIT_AREACODE,#{areaCodes})=1
+      </if>
+    )
+    <if test="userAuthHouseList != null and userAuthHouseList.size > 0">
+         AND  t1.HOUSEID in
+         <foreach collection="userAuthHouseList" index="index" item="item" open="(" separator="," close=")">
+         	#{item}
+		</foreach> 
+    </if>
+    <if test="areaCodes != null and areaCodes !='' ">
+       	AND split_areacode(t1.SUBORDINATEUNIT_AREACODE, #{areaCodes}) = 1
+    </if>
+    <if test="unitName!=null and unitName!=''">
+      AND  t2.unitname LIKE '%'||#{unitName}||'%'
+    </if>
+    <if test="houseIDs!=null and houseIDs!=''">
+      AND t1.HOUSEID in (${houseIDs})
+    </if>
+    <if test="name!=null and name!=''">
+      AND  t1.VIRTUALHOST_NAME LIKE '%'||#{name}||'%'
+    </if>
+    <if test="type!=null">
+      AND  t1.VIRTUALHOST_TYPE =#{type}
+    </if>
+    <if test="networkAddress!=null and networkAddress!=''">
+      AND  t1.NETWORK_ADDRESS LIKE '%'||#{networkAddress}||'%'
+    </if>
+    <if test="startDate!=null and startDate!=''">
+      AND  #{startDate} &lt;= to_char(t1.UPDATE_TIME,'yyyy-mm-dd')
+    </if>
+    <if test="endDate!=null and endDate!=''">
+      AND  #{endDate} &gt;= to_char(t1.UPDATE_TIME,'yyyy-mm-dd')
+    </if>
+    ORDER  BY t1.UPDATE_TIME DESC
+  </select>
+
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from RPT_ISMS_BASE_USER_VIRTUAL
+    where VIRTUALID = #{virtualId,jdbcType=DECIMAL}
+  </select>
+
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from RPT_ISMS_BASE_USER_VIRTUAL
+    where VIRTUALID = #{virtualId,jdbcType=DECIMAL}
+  </delete>
+
+  <insert id="insert" parameterType="com.aotain.cu.serviceapi.model.UserVirtualInformation">
+    insert into RPT_ISMS_BASE_USER_VIRTUAL (VIRTUALID, USERID, HOUSEID, 
+      VIRTUALHOST_NAME, VIRTUALHOST_STATE, VIRTUALHOST_TYPE, 
+      NETWORK_ADDRESS, MGN_ADDRESS, CREATE_TIME, 
+      UPDATE_TIME, CREATE_USERID, UPDATE_USERID, SUBORDINATEUNIT_AREACODE
+      )
+    values (#{virtualId,jdbcType=DECIMAL}, #{userId,jdbcType=DECIMAL}, #{houseId,jdbcType=DECIMAL},
+      #{name,jdbcType=VARCHAR}, #{status,jdbcType=DECIMAL}, #{type,jdbcType=DECIMAL},
+      #{networkAddress,jdbcType=VARCHAR}, #{mgnAddress,jdbcType=OTHER}, #{createTime,jdbcType=TIMESTAMP}, 
+      #{updateTime,jdbcType=TIMESTAMP}, #{createUserId,jdbcType=DECIMAL}, #{updateUserId,jdbcType=DECIMAL}, #{areaCode,jdbcType=VARCHAR}
+      )
+  </insert>
+
+  <update id="updateByPrimaryKeySelective" parameterType="com.aotain.cu.serviceapi.model.UserVirtualInformation">
+    update RPT_ISMS_BASE_USER_VIRTUAL
+    <set>
+      <if test="userId != null">
+        USERID = #{userId,jdbcType=DECIMAL},
+      </if>
+      <if test="houseId != null">
+        HOUSEID = #{houseId,jdbcType=DECIMAL},
+      </if>
+      <if test="name != null">
+        VIRTUALHOST_NAME = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null">
+        VIRTUALHOST_STATE = #{status,jdbcType=DECIMAL},
+      </if>
+      <if test="type != null">
+        VIRTUALHOST_TYPE = #{type,jdbcType=DECIMAL},
+      </if>
+      <if test="networkAddress != null">
+        NETWORK_ADDRESS = #{networkAddress,jdbcType=VARCHAR},
+      </if>
+      <if test="mgnAddress != null">
+        MGN_ADDRESS = #{mgnAddress,jdbcType=OTHER},
+      </if>
+      <if test="createTime != null">
+        CREATE_TIME = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        UPDATE_TIME = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createUserId != null">
+        CREATE_USERID = #{createUserId,jdbcType=DECIMAL},
+      </if>
+      <if test="updateUserId != null">
+        UPDATE_USERID = #{updateUserId,jdbcType=DECIMAL},
+      </if>
+      <if test="areaCode != null">
+        SUBORDINATEUNIT_AREACODE = #{areaCode,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where VIRTUALID = #{virtualId,jdbcType=DECIMAL}
+  </update>
+
+  <insert id="insertList" parameterType="java.util.List" useGeneratedKeys="false">
+    insert into RPT_ISMS_BASE_USER_VIRTUAL (VIRTUALID, USERID, HOUSEID,
+    VIRTUALHOST_NAME, VIRTUALHOST_STATE, VIRTUALHOST_TYPE,
+    NETWORK_ADDRESS, MGN_ADDRESS, CREATE_TIME,
+    UPDATE_TIME, CREATE_USERID, UPDATE_USERID, SUBORDINATEUNIT_AREACODE,VIRTUALHOST_NO
+    )
+    (<foreach collection="list" item="item" index="index" separator="union all">
+      select
+        #{item.virtualId,jdbcType=DECIMAL}, #{item.userId,jdbcType=DECIMAL}, #{item.houseId,jdbcType=DECIMAL},
+        #{item.name,jdbcType=VARCHAR}, #{item.status,jdbcType=DECIMAL}, #{item.type,jdbcType=DECIMAL},
+        #{item.networkAddress,jdbcType=VARCHAR}, #{item.mgnAddress,jdbcType=OTHER}, #{item.createTime,jdbcType=TIMESTAMP},
+        #{item.updateTime,jdbcType=TIMESTAMP}, #{item.createUserId,jdbcType=DECIMAL}, #{item.updateUserId,jdbcType=DECIMAL}, #{item.areaCode,jdbcType=VARCHAR},
+        #{item.virtualNo,jdbcType=VARCHAR}
+       from dual
+  </foreach>
+    )
+  </insert>
+
+  <select id="selectCountById" parameterType="com.aotain.cu.serviceapi.model.UserVirtualInformation" resultType="java.lang.Integer">
+    select count(1)  from RPT_ISMS_BASE_USER_VIRTUAL
+    where VIRTUALID = #{virtualId,jdbcType=DECIMAL}
+  </select>
+
+  <delete id="deleteByIds" parameterType="java.util.HashMap">
+    delete from RPT_ISMS_BASE_USER_VIRTUAL
+    where VIRTUALID in (
+    <foreach collection="virtualIds" item="item" separator=",">
+      #{item}
+    </foreach>
+    )
+    AND USERID = #{userId}
+  </delete>
+
+  <update id="updateOrAdd" parameterType="java.util.List">
+    MERGE INTO RPT_ISMS_BASE_USER_VIRTUAL t1 USING (
+    <foreach collection="list" item="item" index="index" separator="union" >
+      select
+      #{item.virtualId,jdbcType=DECIMAL} virtualId,
+      #{item.userId,jdbcType=DECIMAL} userId,
+      #{item.houseId,jdbcType=DECIMAL} houseId,
+      #{item.name,jdbcType=VARCHAR} name,
+      #{item.status,jdbcType=DECIMAL} status,
+      #{item.type,jdbcType=DECIMAL} type,
+      #{item.networkAddress,jdbcType=VARCHAR} networkAddress,
+      #{item.mgnAddress,jdbcType=OTHER} mgnAddress,
+      #{item.createTime,jdbcType=TIMESTAMP} createTime,
+      #{item.updateTime,jdbcType=TIMESTAMP} updateTime,
+      #{item.createUserId,jdbcType=DECIMAL} createUserId,
+      #{item.updateUserId,jdbcType=DECIMAL} updateUserId,
+      #{item.areaCode,jdbcType=VARCHAR} areaCode,
+      #{item.virtualNo,jdbcType=VARCHAR} virtualNo
+      from dual
+    </foreach>
+    ) t2 ON ( t1.VIRTUALID = t2.virtualId )
+    WHEN MATCHED  THEN
+    UPDATE
+    <set>
+      t1.USERID = t2.userId,
+      t1.HOUSEID = t2.houseId,
+      t1.VIRTUALHOST_NAME = t2.name,
+      t1.VIRTUALHOST_STATE = t2.status,
+      t1.VIRTUALHOST_TYPE = t2.type,
+      t1.NETWORK_ADDRESS = t2.networkAddress,
+      t1.MGN_ADDRESS = t2.mgnAddress,
+      t1.CREATE_TIME = t2.createTime,
+      t1.UPDATE_TIME = t2.updateTime,
+      t1.CREATE_USERID = t2.createUserId,
+      t1.UPDATE_USERID = t2.updateUserId,
+      t1.SUBORDINATEUNIT_AREACODE = t2.areaCode,
+      t1.VIRTUALHOST_NO = t2.virtualNo
+    </set>
+    WHEN NOT MATCHED THEN
+    INSERT ( VIRTUALID, USERID, HOUSEID,
+    VIRTUALHOST_NAME, VIRTUALHOST_STATE, VIRTUALHOST_TYPE,
+    NETWORK_ADDRESS, MGN_ADDRESS, CREATE_TIME,
+    UPDATE_TIME, CREATE_USERID, UPDATE_USERID, SUBORDINATEUNIT_AREACODE, VIRTUALHOST_NO)
+    values ( t2.virtualId ,t2.userId, t2.houseId,t2.name,t2.status,t2.type,t2.networkAddress,
+    t2.mgnAddress, t2.createTime,t2.updateTime,t2.createUserId,t2.updateUserId, t2.areaCode, t2.virtualNo)
+  </update>
+
+  <delete id="deleteByIdList" parameterType="java.util.List">
+    DELETE FROM RPT_ISMS_BASE_USER_VIRTUAL
+    WHERE VIRTUALID in (
+    <foreach collection="list" item="item" separator=",">
+      #{item.virtualId}
+    </foreach>
+    )
+    </delete>
+    
+    <select id="findByVirtualNo"  resultType="com.aotain.cu.serviceapi.model.UserVirtualInformation">
+        select * from rpt_isms_base_user_virtual
+        WHERE VIRTUALHOST_NO = #{virtualNo}
+    </select>
+
+    <select id="findByName"  resultType="com.aotain.cu.serviceapi.model.UserVirtualInformation">
+        select * from rpt_isms_base_user_virtual
+        WHERE VIRTUALHOST_NAME = #{name}
+    </select>
+
+</mapper>

@@ -1,0 +1,215 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.aotain.serviceapi.server.dao.report.RptUserBandWidthMapper">
+  <resultMap id="BaseResultMap" type="com.aotain.cu.serviceapi.model.UserBandwidthInformation">
+    <id column="HHID" jdbcType="DECIMAL" property="hhId" />
+    <result column="USERID" jdbcType="DECIMAL" property="userId" />
+    <result column="HOUSEID" jdbcType="DECIMAL" property="houseId" />
+    <result column="DISTRIBUTETIME" jdbcType="VARCHAR" property="distributeTime" />
+    <result column="BANDWIDTH" jdbcType="DECIMAL" property="bandWidth" />
+    <result column="CREATE_TIME" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="UPDATE_TIME" jdbcType="TIMESTAMP" property="updateTime" />
+    <result column="CREATE_USERID" jdbcType="DECIMAL" property="createUserId" />
+    <result column="UPDATE_USERID" jdbcType="DECIMAL" property="updateUserId" />
+    <result column="SUBORDINATEUNIT_AREACODE" jdbcType="VARCHAR" property="areaCode" />
+  </resultMap>
+  <resultMap id="BaseResultMap2" type="com.aotain.cu.serviceapi.dto.UserBandwidthInformationDTO">
+    <id column="HHID" jdbcType="DECIMAL" property="hhId" />
+    <result column="USERID" jdbcType="DECIMAL" property="userId" />
+    <result column="HOUSEID" jdbcType="DECIMAL" property="houseId" />
+    <result column="DISTRIBUTETIME" jdbcType="VARCHAR" property="distributeTime" />
+    <result column="BANDWIDTH" jdbcType="DECIMAL" property="bandWidth" />
+    <result column="CREATE_TIME" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="UPDATE_TIME" jdbcType="TIMESTAMP" property="updateTime" />
+    <result column="CREATE_USERID" jdbcType="DECIMAL" property="createUserId" />
+    <result column="UPDATE_USERID" jdbcType="DECIMAL" property="updateUserId" />
+    <result column="SUBORDINATEUNIT_AREACODE" jdbcType="VARCHAR" property="areaCode" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    HHID, USERID, HOUSEID, DISTRIBUTETIME, BANDWIDTH, CREATE_TIME, UPDATE_TIME, CREATE_USERID, 
+    UPDATE_USERID,SUBORDINATEUNIT_AREACODE
+  </sql>
+
+
+  <select id="getDtoList" parameterType="com.aotain.cu.serviceapi.dto.UserBandwidthInformationDTO" resultMap="BaseResultMap2">
+    select t2.unitname unitName,t3.housename houseName,t1.* from
+    rpt_isms_base_user_bandwidth t1
+    left join rpt_isms_base_user t2 on t1.userid=t2.userid
+    left join RPT_ISMS_BASE_HOUSE t3 on t1.houseid=t3.houseid
+    where 1=1
+    <if test="userId != null">
+        AND  t1.USERID = #{userId}
+    </if>
+    <!--
+    <if test="authIdentities != null and authIdentities != '' ">
+       	AND t1.USERID in ( 
+       		select userid from rpt_isms_base_user where split_areacode(IDENTIFY, #{authIdentities}) = 1
+       	)
+    </if>
+    -->
+    AND t1.USERID in (
+      select userid from RPT_ISMS_BASE_USER usr
+      where 1 = 1
+      <if test="authIdentities != null and authIdentities != '' ">
+        and split_areacode(usr.IDENTIFY, #{authIdentities}) = 1
+      </if>
+      <if test="areaCodes != null and areaCodes != '' ">
+        and split_areacode(usr.SUBORDINATEUNIT_AREACODE, #{areaCodes}) = 1
+      </if>
+    )
+    <if test="userAuthHouseList != null and userAuthHouseList.size > 0">
+         AND  t1.HOUSEID in
+         <foreach collection="userAuthHouseList" index="index" item="item" open="(" separator="," close=")">
+         	#{item}
+		</foreach> 
+    </if>
+    <if test="areaCodes != null and areaCodes != '' ">
+       	AND split_areacode(t1.SUBORDINATEUNIT_AREACODE, #{areaCodes}) = 1
+    </if>
+    <if test="unitName!=null and unitName!=''">
+      AND  t2.unitname LIKE '%'||#{unitName}||'%'
+    </if>
+    <if test="houseIDs!=null and houseIDs!=''">
+      AND t1.HOUSEID in (${houseIDs})
+    </if>
+    <if test="distributeTime!=null and distributeTime!=''">
+      AND  t1.DISTRIBUTETIME =#{distributeTime}
+    </if>
+    <if test="startDate!=null and startDate!=''">
+      AND  #{startDate} &lt;= to_char(t1.UPDATE_TIME,'yyyy-mm-dd')
+    </if>
+    <if test="endDate!=null and endDate!=''">
+      AND  #{endDate} &gt;= to_char(t1.UPDATE_TIME,'yyyy-mm-dd')
+    </if>
+    ORDER  BY t1.UPDATE_TIME DESC
+  </select>
+
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from RPT_ISMS_BASE_USER_BANDWIDTH
+    where HHID = #{hhId,jdbcType=DECIMAL}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from RPT_ISMS_BASE_USER_BANDWIDTH
+    where HHID = #{hhId,jdbcType=DECIMAL}
+  </delete>
+  <insert id="insert" parameterType="com.aotain.cu.serviceapi.model.UserBandwidthInformation">
+    insert into RPT_ISMS_BASE_USER_BANDWIDTH (HHID, USERID, HOUSEID, 
+      DISTRIBUTETIME, BANDWIDTH, CREATE_TIME, 
+      UPDATE_TIME, CREATE_USERID, UPDATE_USERID, SUBORDINATEUNIT_AREACODE 
+      )
+    values (#{hhId,jdbcType=DECIMAL}, #{userId,jdbcType=DECIMAL}, #{houseId,jdbcType=DECIMAL},
+      #{distributeTime,jdbcType=VARCHAR}, #{bandWidth,jdbcType=DECIMAL}, #{createTime,jdbcType=TIMESTAMP},
+      #{updateTime,jdbcType=TIMESTAMP}, #{createUserId,jdbcType=DECIMAL}, #{updateUserId,jdbcType=DECIMAL}, #{areaCode,jdbcType=VARCHAR}
+      )
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.aotain.cu.serviceapi.model.UserBandwidthInformation">
+    update RPT_ISMS_BASE_USER_BANDWIDTH
+    <set>
+      <if test="userId != null">
+        USERID = #{userId,jdbcType=DECIMAL},
+      </if>
+      <if test="houseId != null">
+        HOUSEID = #{houseId,jdbcType=DECIMAL},
+      </if>
+      <if test="distributeTime != null">
+        DISTRIBUTETIME = #{distributeTime,jdbcType=VARCHAR},
+      </if>
+      <if test="bandWidth != null">
+        BANDWIDTH = #{bandWidth,jdbcType=DECIMAL},
+      </if>
+      <if test="createTime != null">
+        CREATE_TIME = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        UPDATE_TIME = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createUserId != null">
+        CREATE_USERID = #{createUserId,jdbcType=DECIMAL},
+      </if>
+      <if test="updateUserId != null">
+        UPDATE_USERID = #{updateUserId,jdbcType=DECIMAL},
+      </if>
+      <if test="areaCode != null">
+		SUBORDINATEUNIT_AREACODE = #{areaCode,jdbcType=VARCHAR},
+	  </if>
+    </set>
+    where HHID = #{hhId,jdbcType=DECIMAL}
+  </update>
+  <insert id="insertList" parameterType="java.util.List" useGeneratedKeys="false">
+    INSERT INTO RPT_ISMS_BASE_USER_BANDWIDTH (HHID, USERID, HOUSEID,
+    DISTRIBUTETIME, BANDWIDTH, CREATE_TIME,
+    UPDATE_TIME, CREATE_USERID, UPDATE_USERID, SUBORDINATEUNIT_AREACODE
+    )
+    (<foreach collection="list" item="item" index="index" separator="union all">
+    select #{item.hhId,jdbcType=DECIMAL}, #{item.userId,jdbcType=DECIMAL}, #{item.houseId,jdbcType=DECIMAL},
+      #{item.distributeTime,jdbcType=VARCHAR}, #{item.bandWidth,jdbcType=DECIMAL}, #{item.createTime,jdbcType=TIMESTAMP},
+      #{item.updateTime,jdbcType=TIMESTAMP}, #{item.createUserId,jdbcType=DECIMAL}, #{item.updateUserId,jdbcType=DECIMAL}, #{item.areaCode,jdbcType=VARCHAR}
+    from dual
+  </foreach>
+    )
+  </insert>
+  <select id="selectCountById" parameterType="com.aotain.cu.serviceapi.model.UserBandwidthInformation" resultType="java.lang.Integer">
+    select count(1)  from RPT_ISMS_BASE_USER_BANDWIDTH
+    where HHID = #{hhId,jdbcType=DECIMAL}
+  </select>
+
+  <delete id="deleteByIds" parameterType="java.util.HashMap">
+    delete from RPT_ISMS_BASE_USER_BANDWIDTH
+    where HHID in (
+    <foreach collection="hhIds" item="item" separator=",">
+      #{item}
+    </foreach>
+    )
+    AND USERID = #{userId}
+  </delete>
+
+  <update id="updateOrAdd" parameterType="java.util.List">
+    MERGE INTO RPT_ISMS_BASE_USER_BANDWIDTH t1 USING (
+    <foreach collection="list" item="item" index="index" separator="union" >
+      select
+      #{item.hhId,jdbcType=DECIMAL} hhId,
+      #{item.userId,jdbcType=DECIMAL} userId,
+      #{item.houseId,jdbcType=DECIMAL} houseId,
+      #{item.distributeTime,jdbcType=VARCHAR} distributeTime,
+      #{item.bandWidth,jdbcType=DECIMAL} bandWidth,
+      #{item.createTime,jdbcType=TIMESTAMP} createTime,
+      #{item.updateTime,jdbcType=TIMESTAMP} updateTime,
+      #{item.createUserId,jdbcType=DECIMAL} createUserId,
+      #{item.updateUserId,jdbcType=DECIMAL} updateUserId,
+      #{item.areaCode,jdbcType=VARCHAR} areaCode
+      from dual
+    </foreach>
+    ) t2 ON ( t1.HHID = t2.hhId )
+    WHEN MATCHED  THEN
+    UPDATE
+    <set>
+      t1.USERID = t2.userId,
+      t1.HOUSEID = t2.houseId,
+      t1.DISTRIBUTETIME = t2.distributeTime,
+      t1.BANDWIDTH = t2.bandWidth,
+      t1.CREATE_TIME = t2.createTime,
+      t1.UPDATE_TIME = t2.updateTime,
+      t1.CREATE_USERID = t2.createUserId,
+      t1.UPDATE_USERID = t2.updateUserId,
+      t1.SUBORDINATEUNIT_AREACODE = t2.areaCode
+    </set>
+    WHEN NOT MATCHED THEN
+    INSERT ( HHID, USERID, HOUSEID, DISTRIBUTETIME, BANDWIDTH, CREATE_TIME, UPDATE_TIME, CREATE_USERID,
+    UPDATE_USERID, SUBORDINATEUNIT_AREACODE)
+    values (  t2.hhId,t2.userId,t2.houseId,t2.distributeTime,t2.bandWidth,
+    t2.createTime,t2.updateTime,t2.createUserId,t2.updateUserId, t2.areaCode
+    )
+  </update>
+
+    <delete id="deleteByIdList" parameterType="java.util.List">
+    DELETE FROM RPT_ISMS_BASE_USER_BANDWIDTH
+    WHERE HHID in (
+    <foreach collection="list" item="item" separator=",">
+        #{item.hhId}
+    </foreach>
+    )
+    </delete>
+
+</mapper>

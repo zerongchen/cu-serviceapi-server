@@ -1,0 +1,444 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.aotain.serviceapi.server.dao.preinput.HouseIpSegmentMapper">
+
+    <resultMap id="baseMap" type="com.aotain.cu.serviceapi.model.HouseIPSegmentInformation">
+        <result column="IPSEGID" jdbcType="DECIMAL" property="ipSegId" />
+        <result column="HOUSEID" jdbcType="DECIMAL" property="houseId" />
+        <result column="STARTIP" jdbcType="VARCHAR" property="startIP" />
+        <result column="ENDIP" jdbcType="VARCHAR" property="endIP" />
+        <result column="IPTYPE" jdbcType="DECIMAL" property="ipType" />
+        <result column="USERNAME" jdbcType="VARCHAR" property="userName" />
+        <result column="IDTYPE" jdbcType="DECIMAL" property="idType" />
+        <result column="IDNUMBER" jdbcType="DECIMAL" property="idNumber" />
+        <result column="SOURCEUNIT" jdbcType="VARCHAR" property="sourceUnit" />
+        <result column="ALLOCATIONUNIT" jdbcType="VARCHAR" property="allocationUnit" />
+        <result column="CZLX" jdbcType="DECIMAL" property="czlx" />
+        <result column="DEAL_FLAG" jdbcType="DECIMAL" property="dealFlag" />
+        <result column="CREATE_TIME" jdbcType="TIMESTAMP" property="createTime" />
+        <result column="UPDATE_TIME" jdbcType="TIMESTAMP" property="updateTime" />
+        <result column="CREATE_USERID" jdbcType="DECIMAL" property="createUserId" />
+        <result column="STARTIPSTR" jdbcType="VARCHAR" property="startIPStr" />
+        <result column="ENDIPSTR" jdbcType="VARCHAR" property="endIPStr" />
+        <result column="DEL_FLAG" jdbcType="DECIMAL" property="delFlag" />
+        <result column="IPSEG_NO" jdbcType="VARCHAR" property="ipSegNo" />
+        <!--<result column="IPSEGIDSTR" jdbcType="VARCHAR" property="ipSegId" />-->
+        <!--<result column="ROOMID" jdbcType="VARCHAR" property="" />-->
+        <!--<result column="USERID" jdbcType="DECIMAL" property="userId" />-->
+        <result column="UPDATE_USERID" jdbcType="DECIMAL" property="updateUserId" />
+        <result column="SUBORDINATEUNIT_AREACODE" jdbcType="VARCHAR" property="areaCode" />
+    </resultMap>
+
+    <resultMap id="baseMapDto" type="com.aotain.cu.serviceapi.dto.HouseIPSegmentInforDTO">
+        <result column="IPSEGID" jdbcType="DECIMAL" property="ipSegId" />
+        <result column="HOUSEID" jdbcType="DECIMAL" property="houseId" />
+        <result column="STARTIP" jdbcType="VARCHAR" property="startIP" />
+        <result column="ENDIP" jdbcType="VARCHAR" property="endIP" />
+        <result column="IPTYPE" jdbcType="DECIMAL" property="ipType" />
+        <result column="USERNAME" jdbcType="VARCHAR" property="userName" />
+        <result column="IDTYPE" jdbcType="DECIMAL" property="idType" />
+        <result column="IDNUMBER" jdbcType="VARCHAR" property="idNumber" />
+        <result column="SOURCEUNIT" jdbcType="VARCHAR" property="sourceUnit" />
+        <result column="ALLOCATIONUNIT" jdbcType="VARCHAR" property="allocationUnit" />
+        <result column="CZLX" jdbcType="DECIMAL" property="czlx" />
+        <result column="DEAL_FLAG" jdbcType="DECIMAL" property="dealFlag" />
+        <result column="CREATE_TIME" jdbcType="TIMESTAMP" property="createTime" />
+        <result column="UPDATE_TIME" jdbcType="TIMESTAMP" property="updateTime" />
+        <result column="CREATE_USERID" jdbcType="DECIMAL" property="createUserId" />
+        <result column="STARTIPSTR" jdbcType="VARCHAR" property="startIPStr" />
+        <result column="ENDIPSTR" jdbcType="VARCHAR" property="endIPStr" />
+        <result column="DEL_FLAG" jdbcType="DECIMAL" property="delFlag" />
+        <result column="IPSEG_NO" jdbcType="VARCHAR" property="ipSegNo" />
+        <result column="UPDATE_USERID" jdbcType="DECIMAL" property="updateUserId" />
+        <result column="dealFlagHouse" jdbcType="DECIMAL" property="dealFlagHouse" />
+        <result column="preEndIP" jdbcType="VARCHAR" property="preEndIP" />
+        <result column="houseName" jdbcType="VARCHAR" property="houseName" />
+        <result column="areaCode" jdbcType="VARCHAR" property="areaCode" />
+        <result column="rptIpSegId" jdbcType="DECIMAL" property="rptIpSegId" />
+        <result column="rptHouseId" jdbcType="DECIMAL" property="rptHouseId" />
+        <result column="rptStartIP" jdbcType="VARCHAR" property="rptStartIP" />
+        <result column="rptEndIP" jdbcType="VARCHAR" property="rptEndIP" />
+        <result column="rptStartIPStr" jdbcType="VARCHAR" property="rptStartIPStr" />
+        <result column="rptEndIPStr" jdbcType="VARCHAR" property="rptEndIPStr" />
+        <result column="rptIpType" jdbcType="DECIMAL" property="rptIpType" />
+        <result column="rptUserName" jdbcType="VARCHAR" property="rptUserName" />
+        <result column="rptIdType" jdbcType="DECIMAL" property="rptIdType" />
+        <result column="rptIdNumber" jdbcType="VARCHAR" property="rptIdNumber" />
+        <result column="rptUseTime" jdbcType="VARCHAR" property="rptUseTime" />
+        <result column="rptSourceUnit" jdbcType="VARCHAR" property="rptSourceUnit" />
+        <result column="rptAllocationUnit" jdbcType="VARCHAR" property="rptAllocationUnit" />
+        <result column="rptAreaCode" jdbcType="VARCHAR" property="rptAreaCode" />
+    </resultMap>
+
+    <sql id="baseSql">
+        IPSEGID,HOUSEID,STARTIP,ENDIP,IPTYPE,USERNAME,IDTYPE,IDNUMBER,USETIME,
+        SOURCEUNIT,ALLOCATIONUNIT,CZLX,DEAL_FLAG,CREATE_TIME,UPDATE_TIME,CREATE_USERID,
+        STARTIPSTR,ENDIPSTR,DEL_FLAG,IPSEG_NO,IPSEGIDSTR,ROOMID,USERID,
+        SUBORDINATEUNIT_AREACODE,UPDATE_USERID
+    </sql>
+
+    <select id="findByIpSegNo" parameterType="string" resultMap="baseMap">
+        SELECT
+        <include refid="baseSql"/>
+        FROM IDC_ISMS_BASE_HOUSE_IPSEG
+        WHERE IPSEG_NO = #{ipSegNo}
+    </select>
+
+    <select id="countConflictIpSegment" parameterType="com.aotain.cu.serviceapi.model.HouseIPSegmentInformation"  resultType="int">
+        SELECT count(1) from IDC_ISMS_BASE_HOUSE_IPSEG
+        where 1 = 1 AND
+        (  (STARTIPSTR BETWEEN ${startIPStr} AND ${endIPStr})
+        OR (ENDIPSTR BETWEEN ${startIPStr} AND ${endIPStr})
+        OR (ENDIPSTR &gt;= ${endIPStr} AND STARTIPSTR &lt;= ${startIPStr})
+        )
+        <if test="ipType!=null and (ipType==3||ipType==999)">
+            and IPTYPE != #{ipType}
+        </if>
+        <if test="ipSegId!=null">
+            AND IPSEGID != #{ipSegId}
+        </if>
+    </select>
+
+    <select id="countIpSegmentForSpecial" parameterType="com.aotain.cu.serviceapi.model.HouseIPSegmentInformation" resultType="int">
+        SELECT count(1) from IDC_ISMS_BASE_HOUSE_IPSEG
+        where 1 = 1 AND
+        (  (STARTIPSTR BETWEEN ${startIPStr} AND ${endIPStr})
+        OR (ENDIPSTR BETWEEN ${startIPStr} AND ${endIPStr})
+        OR (ENDIPSTR &gt;= ${endIPStr} AND STARTIPSTR &lt;= ${startIPStr})
+        )
+        <if test="ipSegId!=null">
+            AND IPSEGID != #{ipSegId}
+        </if>
+    </select>
+
+    <select id="countIpSegmentSpecialForSameUnit" parameterType="com.aotain.cu.serviceapi.model.HouseIPSegmentInformation" resultType="int">
+        SELECT count(1) from IDC_ISMS_BASE_HOUSE_IPSEG
+        where 1 = 1 AND
+        (  (STARTIPSTR BETWEEN ${startIPStr} AND ${endIPStr})
+        OR (ENDIPSTR BETWEEN ${startIPStr} AND ${endIPStr})
+        OR (ENDIPSTR &gt;= ${endIPStr} AND STARTIPSTR &lt;= ${startIPStr})
+        )
+        <if test="userName!=null">
+            AND USERNAME = #{userName}
+        </if>
+        <if test="ipSegId!=null">
+            AND IPSEGID != #{ipSegId}
+        </if>
+    </select>
+
+    <sql id="queryColumns">
+        a.IPSEGID,
+        a.HOUSEID,
+        a.STARTIP,
+        a.ENDIP,
+        a.IPTYPE,
+        a.USERNAME,
+        a.IDTYPE,
+        a.IDNUMBER,
+        a.SOURCEUNIT,
+        a.ALLOCATIONUNIT,
+        a.CZLX,
+        a.DEAL_FLAG,
+        a.CREATE_TIME,
+        a.UPDATE_TIME,
+        a.CREATE_USERID,
+        a.STARTIPSTR,
+        a.ENDIPSTR,
+        a.DEL_FLAG,
+        a.IPSEG_NO,
+        a.USETIME,
+        a.UPDATE_USERID,
+        c.ENDIP as preEndIP,
+        b.DEAL_FLAG as dealFlagHouse,
+        b.HOUSENAME as houseName,
+        a.SUBORDINATEUNIT_AREACODE as areaCode,
+        c.IPSEGID as rptIpSegId,
+		c.HOUSEID as rptHouseId,
+		c.STARTIP as rptStartIP,
+		c.ENDIP as rptEndIP,
+		c.STARTIPSTR as rptStartIPStr,
+		c.ENDIPSTR as rptEndIPStr,
+		c.IPTYPE as rptIpType,
+		c.USERNAME as rptUserName,
+		c.IDTYPE as rptIdType,
+		c.IDNUMBER as rptIdNumber,
+		c.USETIME as rptUseTime,
+		c.SOURCEUNIT as rptSourceUnit,
+		c.ALLOCATIONUNIT as rptAllocationUnit,
+		c.SUBORDINATEUNIT_AREACODE as rptAreaCode
+    </sql>
+    <select id="getIndexHouseIpSegment" parameterType="com.aotain.cu.serviceapi.dto.HouseIPSegmentInforDTO"  resultMap="baseMapDto">
+        SELECT <include refid="queryColumns"/>
+        FROM  IDC_ISMS_BASE_HOUSE_IPSEG a LEFT JOIN   RPT_ISMS_BASE_HOUSE_IPSEG c ON a.IPSEGID = c.IPSEGID ,
+        IDC_ISMS_BASE_HOUSE b
+        WHERE a.HOUSEID = b.HOUSEID
+        <if test="userAuthHouseList != null and userAuthHouseList.size > 0">
+          AND  a.HOUSEID in
+          	<foreach collection="userAuthHouseList" index="index" item="item" open="(" separator="," close=")">
+          		#{item}
+			</foreach> 
+        </if>
+        <!-- AND a.HOUSEID in (
+            select HOUSEID FROM IDC_ISMS_BASE_HOUSE
+            where 1 = 1
+            <if test="authIdentities != null and authIdentities != '' ">
+                and split_areacode(IDENTIFY, #{authIdentities}) = 1
+            </if>
+            <if test="areaCodes != null and areaCodes != '' ">
+                and split_areacode(SUBORDINATEUNIT_AREACODE, #{areaCodes}) = 1
+            </if>
+            <if test="userAuthHouseList != null and userAuthHouseList.size > 0">
+                AND HOUSEID in
+                <foreach collection="userAuthHouseList" index="index" item="item" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+        ) -->
+        <if test="areaCodes != null and areaCodes != '' ">
+          AND split_areacode(a.SUBORDINATEUNIT_AREACODE, #{areaCodes}) = 1
+        </if>
+        <if test="startIP!=null and startIP!=''">
+            AND ( a.STARTIP LIKE '%'||#{startIP}||'%'
+            OR  a.ENDIP LIKE '%'||#{startIP}||'%'
+            <if test="startIPStr!=null and startIPStr!=''">
+                OR( #{startIPStr} &gt;= a.startipstr
+                AND #{startIPStr} &lt;= a.endipstr )
+            </if>
+            )
+        </if>
+
+        <if test="userName!=null and userName!=''">
+            AND a.USERNAME LIKE '%'||#{userName}||'%'
+        </if>
+        <if test="dealFlag!=null">
+            AND a.DEAL_FLAG = #{dealFlag}
+        </if>
+        <if test="houseId!=null">
+            AND a.HOUSEID = #{houseId}
+        </if>
+        <if test="dealFlag!=null">
+            AND a.DEAL_FLAG = #{dealFlag}
+        </if>
+        <if test="czlx!=null">
+            AND a.CZLX = #{czlx}
+        </if>
+        <if test="startDate!=null and startDate!=''">
+            AND  #{startDate} &lt;= to_char(a.UPDATE_TIME,'yyyy-mm-dd')
+        </if>
+        <if test="endDate!=null and endDate!=''">
+            AND  #{endDate} &gt;= to_char(a.UPDATE_TIME,'yyyy-mm-dd')
+        </if>
+        <if test="ipType!=null">
+            and  a.IPTYPE = #{ipType}
+        </if>
+        <if test="houseName!=null ">
+            AND b.HOUSENAME  LIKE '%'||#{houseName}||'%'
+        </if>
+        <if test="houseIDs!=null and houseIDs!=''">
+            and b.HOUSEID in ( ${houseIDs} )
+        </if>
+        <!-- 用户详情查询IP信息条件 -->
+        <if test="unitName!=null and unitName!=''">
+            AND a.USERNAME = #{unitName}
+        </if>
+        <if test="idType!=null">
+            AND (a.idtype = #{idType} or a.idtype is null )
+        </if>
+        <if test="idNumber!=null">
+            AND (a.idnumber = #{idNumber} or a.idnumber is null )
+        </if>
+        ORDER  BY a.UPDATE_TIME DESC
+    </select>
+
+    <insert id="insertHouseIpSegment" parameterType="com.aotain.cu.serviceapi.model.HouseIPSegmentInformation">
+        <selectKey keyProperty="ipSegId" resultType="java.lang.Long" order="BEFORE">
+            SELECT seq_isms_base_house_ipsegid.NEXTVAL as ipSegId FROM dual
+        </selectKey>
+        insert into idc_isms_base_house_ipseg
+        (ipsegid, startip, endip,STARTIPSTR,ENDIPSTR, iptype, username, idtype, idnumber, usetime, houseid, czlx, deal_flag, create_time,update_time, SOURCEUNIT,ALLOCATIONUNIT,CREATE_USERID,IPSEG_NO,SUBORDINATEUNIT_AREACODE)
+        values
+        (#{ipSegId}, #{startIP}, #{endIP},#{startIPStr},#{endIPStr}, #{ipType}, #{userName,jdbcType=VARCHAR}, #{idType,jdbcType=VARCHAR}, #{idNumber,jdbcType=VARCHAR}, #{useTime,jdbcType=VARCHAR}, #{houseId}, '1', '0', sysdate,sysdate, (select idcname from (select idcname,rownum r from idc_isms_base_idc )where r=1),(select idcname from (select idcname,rownum r from idc_isms_base_idc )where r=1),#{createUserId},#{ipSegNo,jdbcType=VARCHAR},#{areaCode})
+    </insert>
+
+    <update id="updateHouseIpSegment" parameterType="com.aotain.cu.serviceapi.model.HouseIPSegmentInformation">
+        update IDC_ISMS_BASE_HOUSE_IPSEG
+        <set>
+            <if test="houseId != null">
+                HOUSEID = #{houseId,jdbcType=DECIMAL},
+            </if>
+            <if test="startIP != null and startIP != '' ">
+                STARTIP = #{startIP,jdbcType=VARCHAR},
+            </if>
+            <if test="endIP != null and endIP != '' ">
+                ENDIP = #{endIP,jdbcType=VARCHAR},
+            </if>
+            <if test="startIPStr != null and startIPStr != '' ">
+                STARTIPSTR = #{startIPStr,jdbcType=VARCHAR},
+            </if>
+            <if test="endIPStr != null and endIPStr != '' ">
+                ENDIPSTR = #{endIPStr,jdbcType=VARCHAR},
+            </if>
+            <if test="useTime != null and useTime != '' ">
+                USETIME = #{useTime,jdbcType=VARCHAR},
+            </if>
+            <if test="ipType != null and  ipType==2">
+                IPTYPE = #{ipType,jdbcType=DECIMAL},USERNAME=null,IDTYPE=null,IDNUMBER=null,
+            </if>
+            <if test="ipType != null and  ipType!=2">
+                IPTYPE = #{ipType,jdbcType=DECIMAL},
+                <if test="userName != null and userName != '' ">
+                USERNAME = #{userName,jdbcType=VARCHAR},
+            	</if>
+            	<if test="idType != null and idType != '' ">
+                IDTYPE = #{idType,jdbcType=VARCHAR},
+            	</if>
+            	<if test="idNumber != null and idNumber != '' ">
+                IDNUMBER = #{idNumber,jdbcType=VARCHAR},
+            	</if>
+            </if>
+            <if test="areaCode!=null">
+                SUBORDINATEUNIT_AREACODE = #{areaCode,jdbcType=VARCHAR},
+            </if>
+            <if test="czlx != null">
+                czlx = #{czlx,jdbcType=DECIMAL},
+            </if>
+            UPDATE_TIME = sysdate,
+            deal_flag=0,
+            <if test="updateUserId!=null">
+                UPDATE_USERID = #{updateUserId,jdbcType=DECIMAL}
+            </if>
+        </set>
+        where IPSEGID = #{ipSegId}
+    </update>
+    
+    <delete id="deleteByHouseId" parameterType="long">
+    	delete from idc_isms_base_house_ipseg where houseid = #{houseId}
+    </delete>
+    
+    <delete id="deleteByIpsegId" parameterType="long">
+    	delete from idc_isms_base_house_ipseg where ipsegid = #{ipsegId}
+    </delete>
+    
+    <select id="findByIpSegId" parameterType="long" resultMap="baseMap">
+        SELECT
+        <include refid="baseSql"/>
+        FROM IDC_ISMS_BASE_HOUSE_IPSEG
+        WHERE ipsegid = #{ipsegId}
+    </select>
+
+    <select id="findByIpAndType" parameterType="com.aotain.cu.serviceapi.dto.HouseIPSegmentInforDTO" resultMap="baseMap">
+        SELECT
+        <include refid="baseSql"/>
+        FROM IDC_ISMS_BASE_HOUSE_IPSEG
+        WHERE 1 = 1
+        <if test="startIP!=null">
+            AND STARTIP = #{startIP}
+        </if>
+        <if test="endIP!=null">
+            AND ENDIP = #{endIP}
+        </if>
+        <if test="ipType!=null">
+            AND IPTYPE = #{ipType}
+        </if>
+    </select>
+
+
+    <update id="updateIPSegtatusByIpsegId" parameterType="map">
+	    update idc_isms_base_house_ipseg
+	    	<set>
+    			<if test="czlx!=null">
+    				czlx=#{czlx},
+    			</if>
+    			<if test="dealFlag!=null">
+    				deal_flag=#{dealFlag}
+    			</if>
+    		</set>
+    		where ipsegid = #{ipsegId}
+	</update>
+	
+	<update id="dealIpsegWhileUserDelete" parameterType="long">
+		update idc_isms_base_house_ipseg t set iptype=2,username=null,idtype=null,idnumber=null where czlx!=3 and t.username = (select unitname from idc_isms_base_user where userid = #{userId})
+	</update>
+	
+	<update id="updateIpStatuByUserId" parameterType="long">
+		update idc_isms_base_house_ipseg 
+			set czlx =2,deal_flag=0
+    	where username =(select unitname from idc_isms_base_user where userid = #{userId})
+    		and deal_flag=1
+	</update>
+	
+	<select id="findIpsegHouseIdsByUserId" parameterType="long" resultType="long">
+		select distinct houseId from idc_isms_base_house_ipseg where username = (select unitname from idc_isms_base_user where userid = #{userId})
+	</select>
+	
+	<select id="findIpListExistConflick" parameterType="com.aotain.cu.serviceapi.model.HouseIPSegmentInformation" resultMap="baseMap">
+        SELECT
+        <include refid="baseSql"/>
+        FROM IDC_ISMS_BASE_HOUSE_IPSEG
+        where czlx!=3 and ipsegid not in
+        (
+			select ipsegid from idc_isms_base_house_ipseg t where to_number(#{startIPStr}) <![CDATA[ > ]]> endipstr
+			union
+			select ipsegid from idc_isms_base_house_ipseg t where  to_number(#{endIPStr}) <![CDATA[ < ]]> startIpStr
+        )
+        <if test="ipSegId!=null and ipSegId!='' ">
+    		and ipSegId!=#{ipSegId}
+    	</if>
+	</select>
+	
+	
+	<select id="findConflickIp" parameterType="com.aotain.cu.serviceapi.model.HouseIPSegmentInformation" resultMap="baseMap">
+		 SELECT
+        <include refid="baseSql"/>
+        FROM IDC_ISMS_BASE_HOUSE_IPSEG
+        where czlx!=3 and ipsegid not in
+	        (
+				select ipsegid from idc_isms_base_house_ipseg t where to_number(#{startIPStr}) <![CDATA[ > ]]> endipstr
+				union
+				select ipsegid from idc_isms_base_house_ipseg t where  to_number(#{endIPStr}) <![CDATA[ < ]]> startIpStr
+	        )
+	        <if test="ipSegId!=null and ipSegId!='' ">
+	    		and ipSegId!=#{ipSegId}
+	    	</if>
+        <if test="ipType==3 or ipType==999">
+			and  iptype!= #{ipType}
+			union	
+			select <include refid="baseSql"/> from idc_isms_base_house_ipseg t where czlx!=3 and t.ipsegid not in (
+				select ipsegid from idc_isms_base_house_ipseg t where to_number(#{startIPStr}) <![CDATA[ > ]]> to_number(endipstr) 
+				union
+				select ipsegid from idc_isms_base_house_ipseg t where  to_number(#{endIPStr}) <![CDATA[ < ]]> to_number(startIpStr)
+			)
+			<if test="ipSegId!=null and ipSegId!=''">
+				and ipsegid!=#{ipSegId}
+			</if>
+			and  iptype= #{ipType}	 and username=#{userName}
+			<if test="idType!=null and idType!='' ">
+        	 and idType = #{idType}
+        	</if>
+        	<if test="idNumber!=null and idNumber!='' ">
+        	 and idNumber = #{idNumber}
+        	</if>
+        </if>
+        
+	</select>
+	
+	<select id="findRepeatIp" parameterType="com.aotain.cu.serviceapi.model.HouseIPSegmentInformation" resultMap="baseMap">
+		select * from idc_isms_base_house_ipseg t where czlx!=3 and t.ipsegid not in (
+			select ipsegid from idc_isms_base_house_ipseg t where to_number(#{startIPStr}) <![CDATA[ > ]]> to_number(endipstr) 
+			union
+			select ipsegid from idc_isms_base_house_ipseg t where  to_number(#{endIPStr}) <![CDATA[ < ]]> to_number(startIpStr)
+		) 
+		<if test="ipSegId!=null and ipSegId!=''">
+			and ipsegid!=#{ipSegId}
+		</if>
+		and  iptype= #{ipType}	 and username!=#{userName}
+		<if test="idType!=null and idType!='' ">
+       	 and idType = #{idType}
+       	</if>
+       	<if test="idNumber!=null and idNumber!='' ">
+       	 and idNumber = #{idNumber}
+       	</if>
+	</select>
+	
+</mapper>

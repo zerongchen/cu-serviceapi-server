@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.aotain.serviceapi.server.dao.RegexMapper">
+
+    <select id="getValueBySubType"  resultType="string" parameterType="int">
+        select PARAM FROM IDC_JCDM_JYGZ
+        WHERE TYPE = 1 AND SUBTYPE = #{subType}
+    </select>
+
+</mapper>

@@ -1,0 +1,330 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.aotain.serviceapi.server.dao.preinput.HouseFrameMapper">
+	
+    <insert id="insertHouseFrameInfomation" parameterType="com.aotain.cu.serviceapi.model.HouseFrameInformation">
+		<selectKey keyProperty="frameId" resultType="java.lang.Long" order="BEFORE">
+			SELECT SEQ_ISMS_BASE_HOUSE_FRAMEID.NEXTVAL as frameId FROM dual
+		</selectKey>
+			insert into idc_isms_base_house_frame
+              (FRAMEID, FRAMENAME,FRAMENO, USETYPE, DISTRIBUTION, OCCUPANCY,HOUSEID, CZLX, DEAL_FLAG, CREATE_TIME,UPDATE_TIME,CREATE_USERID,SUBORDINATEUNIT_AREACODE)
+            values
+              (#{frameId}, #{frameName}, #{frameName}, #{useType}, #{distribution}, #{occupancy}, #{houseId}, '1', '0', sysdate,sysdate, #{createUserId},#{areaCode})
+	</insert>
+	
+	<update id="updateHouseFrameInfomation" parameterType="com.aotain.cu.serviceapi.model.HouseFrameInformation" useGeneratedKeys="false">
+		UPDATE idc_isms_base_house_frame
+		<set>
+			<if test="frameName!=null">
+				FRAMENAME=#{frameName},
+			</if>
+			<if test="frameNo!=null">
+				FRAMENO=#{frameNo},
+			</if>
+			<if test="useType!=null">
+				USETYPE=#{useType},
+			</if>
+			<if test="distribution!=null">
+				DISTRIBUTION=#{distribution},
+			</if>
+			<if test="occupancy!=null">
+				OCCUPANCY=#{occupancy},
+			</if>
+			<if test="houseId!=null">
+				HOUSEID=#{houseId},
+			</if>
+			<if test="updateUserId!=null">
+				UPDATE_USERID=#{updateUserId},
+			</if>
+			<if test="areaCode!=null">
+				SUBORDINATEUNIT_AREACODE=#{areaCode},
+			</if>
+			<if test="czlx != null">
+                CZLX = #{czlx,jdbcType=DECIMAL},
+            </if>
+            <!-- <if test="dealFlag != null">
+                DEAL_FLAG = #{dealFlag,jdbcType=DECIMAL},
+            </if> -->
+			UPDATE_TIME=sysdate,
+			deal_flag=0,
+		</set>
+		WHERE FRAMEID=#{frameId}
+	</update>
+	
+	<delete id="deleteByHouseId" parameterType="long">
+    	delete from idc_isms_base_house_frame where houseid = #{houseId}
+    </delete>
+    
+    <delete id="deleteByFrameIdOrFrameName">
+    	delete from idc_isms_base_house_frame 
+    	where rownum = 1
+		<if test="frameId != null">
+			and frameId = #{frameId,jdbcType=INTEGER}
+		</if>
+    	<if test="frameName != null">
+			and FRAMENAME = #{frameName,jdbcType=VARCHAR}
+		</if>
+    </delete>
+    
+    <delete id="deleteUserFrameByUserId" parameterType="long">
+    	delete from idc_isms_base_user_frame where houseid = #{houseId}
+    </delete>
+    
+    <select id="findFrameInfoByFrameIdOrFrameName" resultType="com.aotain.cu.serviceapi.model.HouseFrameInformation">
+    	select 
+    		FRAMEID frameId,
+    		FRAMENAME frameName,
+    		USETYPE useType,
+    		DISTRIBUTION distribution,
+    		OCCUPANCY occupancy,
+    		HOUSEID houseId,
+    		SUBORDINATEUNIT_AREACODE areaCode,
+    		czlx czlx,
+    		deal_flag dealFlag,
+			CREATE_USERID as createUserId,
+			UPDATE_USERID as updateUserId
+    	from idc_isms_base_house_frame 
+    	where rownum = 1
+		<if test="frameId != null">
+			and frameId = #{frameId,jdbcType=INTEGER}
+		</if>
+    	<if test="frameName != null">
+			and FRAMENAME = #{frameName,jdbcType=VARCHAR}
+		</if>
+    </select>
+    
+    <update id="updateFrameStatusByframeId" parameterType="map">
+    	update idc_isms_base_house_frame
+    		<set>
+    			<if test="czlx!=null">
+    				czlx=#{czlx},
+    			</if>
+    			<if test="dealFlag!=null">
+    				deal_flag=#{dealFlag}
+    			</if>
+    		</set>
+    	where frameId = #{frameId}
+    </update>
+    
+    <insert id="insertUserFrame" parameterType="com.aotain.cu.serviceapi.model.HouseUserFrameInformation">
+    	<selectKey keyProperty="id" resultType="java.lang.Long" order="BEFORE">
+			SELECT SEQ_ISMS_BASE_USER_FRAMEID.NEXTVAL as id FROM dual
+		</selectKey>
+		insert into idc_isms_base_user_frame
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="id != null" >
+                id,
+            </if>
+            <if test="houseId != null" >
+                houseid,
+            </if>
+            <if test="frameId != null" >
+                frameid,
+            </if>
+            <if test="userName != null" >
+                unitname,
+            </if>
+            <if test="idType != null" >
+                idtype,
+            </if>
+            <if test="idNumber != null" >
+                idnumber,
+            </if>
+            <if test="createUserId != null" >
+                create_userid,
+                create_time,
+            </if>
+            <if test="updateUserId != null" >
+                UPDATE_USERID,
+                UPDATE_TIME,
+            </if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="id != null" >
+                #{id},
+            </if>
+            <if test="houseId != null" >
+                #{houseId}, 
+            </if>
+            <if test="frameId != null" >
+                #{frameId}, 
+            </if>
+            <if test="userName != null" >
+                #{userName}, 
+            </if>
+            <if test="idType != null" >
+                #{idType,jdbcType=DECIMAL}, 
+            </if>
+            <if test="idNumber != null" >
+                #{idNumber,jdbcType=VARCHAR}, 
+            </if>
+            <if test="createUserId != null" >
+                #{createUserId,jdbcType=DECIMAL}, 
+                sysdate,
+            </if>
+            <if test="updateUserId != null" >
+                #{updateUserId,jdbcType=DECIMAL}, 
+                sysdate,
+            </if>
+		</trim>
+    </insert>
+    
+    <select id="findUserFrameByFrameId" parameterType="long" resultType="com.aotain.cu.serviceapi.model.HouseUserFrameInformation">
+    	select 
+			t.id as id,
+			t.houseid as houseId,
+			t.frameid as frameId,
+			t.unitname as userName,
+			t.idtype as idType,
+			t.idnumber as idNumber
+      from idc_isms_base_user_frame t
+      where frameId = #{frameId}
+   	</select>
+   	
+   	<delete id="deleteUserFrameByFrameId" parameterType="long">
+    	delete from idc_isms_base_user_frame where frameId = #{frameId}
+    </delete>
+
+	<sql id="querColumn">
+        e.FRAMEID as frameId,
+        e.HOUSEID as houseId,
+        e.FRAMENAME as frameName,
+        e.USETYPE as useType,
+        e.DISTRIBUTION as distribution,
+        e.OCCUPANCY as occupancy,
+        e.CZLX as czlx,
+        e.DEAL_FLAG as dealFlag,
+        e.CREATE_TIME as createTime,
+        e.UPDATE_TIME as updateTime,
+        e.CREATE_USERID as createUserId,
+        e.UPDATE_USERID as updateUserId,
+        e.DEL_FLAG as delFlag,
+        e.FRAMENO as frameNo，
+        uf.UNITNAME as unitName,
+        c.USETYPE as preUseType,
+        d.DEAL_FLAG as dealFlagHouse,
+        d.HOUSENAME as houseName,
+        e.SUBORDINATEUNIT_AREACODE as areaCode,
+        c.FRAMEID as rptFrameId, 
+		c.HOUSEID as rptHouseId, 
+		c.FRAMENAME as rptFrameName, 
+		c.USETYPE as rptUseType, 
+		c.DISTRIBUTION as rptDistribution, 
+		c.OCCUPANCY as rptOccupancy, 
+		c.FRAMENO as rptFrameNo, 
+		c.SUBORDINATEUNIT_AREACODE as rptAreaCode,
+		ruf.UNITNAME as rptUnitName
+    </sql>
+	<select id="getIndexHouseFrame" resultType="com.aotain.cu.serviceapi.dto.HouseFrameInformationDTO" parameterType="com.aotain.cu.serviceapi.dto.HouseFrameInformationDTO">
+		SELECT <include refid="querColumn"/>
+		FROM (IDC_ISMS_BASE_HOUSE_FRAME e left join (select u.frameid,wm_concat(u.unitname) unitname from idc_isms_base_user_frame u group by frameid) uf on e.frameid = uf.frameid )
+		left join RPT_ISMS_BASE_HOUSE_FRAME c on e.FRAMEID = c.FRAMEID
+		left join (select frameid, wm_concat(USERNAME) unitname from RPT_ISMS_BASE_HOUSE_USERFRAME t group by frameid) ruf on c.frameid = ruf.frameid, IDC_ISMS_BASE_HOUSE d
+		WHERE e.HOUSEID = d.HOUSEID
+		<if test="userAuthHouseList != null and userAuthHouseList.size > 0">
+          AND  e.HOUSEID in
+          	<foreach collection="userAuthHouseList" index="index" item="item" open="(" separator="," close=")">
+          		#{item}
+			</foreach> 
+        </if>
+		<!-- AND e.HOUSEID in (
+			select HOUSEID FROM IDC_ISMS_BASE_HOUSE
+			where 1 = 1
+			<if test="authIdentities != null and authIdentities != '' ">
+				and split_areacode(IDENTIFY, #{authIdentities}) = 1
+			</if>
+			<if test="areaCodes != null and areaCodes != '' ">
+				and split_areacode(SUBORDINATEUNIT_AREACODE, #{areaCodes}) = 1
+			</if>
+			<if test="userAuthHouseList != null and userAuthHouseList.size > 0">
+				AND HOUSEID in
+				<foreach collection="userAuthHouseList" index="index" item="item" open="(" separator="," close=")">
+					#{item}
+				</foreach>
+			</if>
+		) -->
+        <if test="areaCodes != null and areaCodes != '' ">
+          AND split_areacode(e.SUBORDINATEUNIT_AREACODE, #{areaCodes}) = 1
+        </if>
+		<if test="houseId!=null">
+			AND e.HOUSEID = #{houseId}
+		</if>
+		<if test="unitName!=null and unitName!=''">
+			AND uf.UNITNAME LIKE '%'||#{unitName}||'%'
+		</if>
+		<if test="frameName!=null and frameName!=''">
+			AND e.FRAMENAME LIKE '%'||#{frameName}||'%'
+		</if>
+		<if test="distribution!=null">
+			AND e.DISTRIBUTION = #{distribution}
+		</if>
+		<if test="dealFlag!=null">
+			AND e.DEAL_FLAG = #{dealFlag}
+		</if>
+		<if test="czlx!=null">
+			AND e.CZLX = #{czlx}
+		</if>
+		<if test="startDate!=null and startDate!=''">
+			AND  #{startDate} &lt;= to_char(e.UPDATE_TIME,'yyyy-mm-dd')
+		</if>
+		<if test="endDate!=null and endDate!=''">
+			AND  #{endDate} &gt;= to_char(e.UPDATE_TIME,'yyyy-mm-dd')
+		</if>
+		<if test="useType!=null ">
+			AND e.USETYPE =  #{useType}
+		</if>
+		<if test="occupancy!=null ">
+			AND e.OCCUPANCY =  #{occupancy}
+		</if>
+		<if test="houseName!=null ">
+			AND d.HOUSENAME  LIKE '%'||#{houseName}||'%'
+		</if>
+		<if test="houseIDs!=null and houseIDs!=''">
+			and d.HOUSEID in ( ${houseIDs} )
+		</if>
+		ORDER  BY e.UPDATE_TIME DESC
+	</select>
+
+	<select id="getUnitName" parameterType="java.util.Map" resultType="java.lang.String">
+		SELECT UNITNAME from IDC_ISMS_BASE_USER_FRAME WHERE HOUSEID = #{houseId} AND FRAMEID = #{frameId}
+	</select>
+
+	<select id="getByFrameName" parameterType="com.aotain.cu.serviceapi.dto.HouseFrameInformationDTO"
+			resultType="com.aotain.cu.serviceapi.dto.HouseFrameInformationDTO">
+		select * FROM idc_isms_base_house_frame
+		where FRAMENAME = #{frameName}
+		<if test="frameId!=null">
+			AND FRAMEID != #{frameId}
+		</if>
+	</select>
+	<select id="findUserFrameByUserInfo" parameterType="com.aotain.cu.serviceapi.dto.UserInformationDTO" resultType="com.aotain.cu.serviceapi.model.HouseUserFrameInformation">
+		select UNITNAME userName,FRAMEID frameId,HOUSEID houseId from  idc_isms_base_user_frame
+		where unitname = #{unitName} and idtype is not null
+		<if test="idType!=null and idType!=''">
+			and idtype=#{idType}
+		</if>
+		<if test="idNumber!=null and idNumber!=''">
+			and idNumber =#{idNumber}
+		</if>
+		union
+		select UNITNAME userName,FRAMEID frameId,HOUSEID houseId from  idc_isms_base_user_frame
+		where unitname = #{unitName} and idtype is null
+		
+		
+	</select>
+	
+	<delete id="deleteUserFrameByUserInfo" parameterType="com.aotain.cu.serviceapi.dto.UserInformationDTO">
+		delete from idc_isms_base_user_frame where id in (
+		select id from idc_isms_base_user_frame where unitname = #{unitName} and idType is null
+		union
+     		select id from idc_isms_base_user_frame where unitname =#{unitName} and idType is not null
+     		<if test="idType!=null and idType!=''">
+			and idtype=#{idType}
+		</if>
+		<if test="idNumber!=null and idNumber!=''">
+			and idNumber =#{idNumber}
+		</if>
+		)
+	</delete>
+</mapper>

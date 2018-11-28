@@ -1,0 +1,378 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.aotain.serviceapi.server.dao.preinput.HousePrincipalMapper">
+
+    <resultMap id="baseMap" type="com.aotain.cu.serviceapi.dto.HouseInformationDTO">
+        <result column="HOUSEID" jdbcType="DECIMAL" property="houseId" />
+        <result column="JYZID" jdbcType="DECIMAL" property="jyzId" />
+        <result column="HOUSEIDSTR" jdbcType="VARCHAR" property="houseIdStr" />
+        <result column="HOUSENAME" jdbcType="VARCHAR" property="houseName" />
+        <result column="HOUSETYPE" jdbcType="DECIMAL" property="houseType" />
+        <result column="HOUSETYPESTR" jdbcType="VARCHAR" property="houseTypeStr" />
+        <result column="HOUSEPROVINCE" jdbcType="DECIMAL" property="houseProvince" />
+        <result column="HOUSECITY" jdbcType="DECIMAL" property="houseCity" />
+        <result column="HOUSECOUNTY" jdbcType="DECIMAL" property="houseCounty" />
+        <result column="HOUSEADD" jdbcType="VARCHAR" property="houseAddress" />
+        <result column="HOUSEZIP" jdbcType="VARCHAR" property="houseZipCode" />
+        <result column="HO_NAME" jdbcType="VARCHAR" property="houseOfficerName" />
+        <result column="HO_IDTYPE" jdbcType="DECIMAL" property="houseOfficerIdType" />
+        <result column="HO_ID" jdbcType="VARCHAR" property="houseOfficerId" />
+        <result column="HO_TEL" jdbcType="VARCHAR" property="houseOfficerTelephone" />
+        <result column="HO_MOBILE" jdbcType="VARCHAR" property="houseOfficerMobile" />
+        <result column="HO_EMAIL" jdbcType="VARCHAR" property="houseOfficerEmail" />
+        <result column="CZLX" jdbcType="DECIMAL" property="czlx" />
+        <result column="DEAL_FLAG" jdbcType="DECIMAL" property="dealFlag" />
+        <result column="CREATE_TIME" jdbcType="TIMESTAMP" property="createTime" />
+        <result column="UPDATE_TIME" jdbcType="TIMESTAMP" property="updateTime" />
+        <result column="CREATE_USERID" jdbcType="DECIMAL" property="createUserId" />
+
+        <!--<result column="HOUSENO" jdbcType="DECIMAL" property="house" />-->
+        <result column="INFO_COMPLETE" jdbcType="VARCHAR" property="infoComplete" />
+        <result column="DEL_FLAG" jdbcType="DECIMAL" property="delFlag" />
+        <!--<result column="ROOMID" jdbcType="DECIMAL" property="" />
+        <result column="CLUSTERID" jdbcType="DECIMAL" property="" />-->
+        <result column="SUBORDINATEUNIT_AREACODE" jdbcType="VARCHAR" property="areaCode" />
+        <result column="IDENTIFY" jdbcType="DECIMAL" property="identify" />
+        <result column="UPDATE_USERID" jdbcType="TIMESTAMP" property="updateUserId" />
+        <result column="VERIFICATION_RESULT" jdbcType="BLOB" property="verificationResult" />
+    </resultMap>
+    
+    <sql id="queryClums">
+        a.JYZID as jyzId,
+        a.HOUSEID as houseId,
+        a.HOUSEIDSTR as houseIdStr,
+        a.HOUSENAME as houseName,
+        a.HOUSETYPE as houseType,
+        a.HOUSEPROVINCE as houseProvince,
+        a.HOUSECITY as houseCity,
+        a.HOUSECOUNTY as houseCounty,
+        a.HOUSEADD as houseAddress,
+        a.HOUSEZIP as houseZipCode,
+        a.HO_NAME as houseOfficerName,
+        a.HO_IDTYPE as houseOfficerIdType,
+        a.HO_ID as houseOfficerId,
+        a.HO_TEL as houseOfficerTelephone,
+        a.HO_MOBILE as houseOfficerMobile,
+        a.HO_EMAIL as houseOfficerEmail,
+        a.CZLX as czlx,
+        a.DEAL_FLAG as dealFlag,
+        a.CREATE_TIME as createTime,
+        a.UPDATE_TIME as updateTime,
+        a.CREATE_USERID as createUserId,
+        a.UPDATE_USERID as updateUserId,
+        a.INFO_COMPLETE as infoComplete,
+        a.DEL_FLAG as delFlag,
+        a.IDENTIFY AS identity,
+        b.MC as provinceName,
+        c.MC as cityName,
+        d.MC as countyName,
+        e.MC as houseTypeStr
+    </sql>
+    <sql id="detailClums">
+        a.JYZID as jyzId,
+        a.HOUSEID as houseId,
+        a.HOUSEIDSTR as houseIdStr,
+        a.HOUSENAME as houseName,
+        a.HOUSETYPE as houseType,
+        a.HOUSEPROVINCE as houseProvince,
+        a.HOUSECITY as houseCity,
+        a.HOUSECOUNTY as houseCounty,
+        a.HOUSEADD as houseAddress,
+        a.HOUSEZIP as houseZipCode,
+        a.HO_NAME as houseOfficerName,
+        a.HO_IDTYPE as houseOfficerIdType,
+        a.HO_ID as houseOfficerId,
+        a.HO_TEL as houseOfficerTelephone,
+        a.HO_MOBILE as houseOfficerMobile,
+        a.HO_EMAIL as houseOfficerEmail,
+        a.CZLX as czlx,
+        a.DEAL_FLAG as dealFlag,
+        a.CREATE_TIME as createTime,
+        a.UPDATE_TIME as updateTime,
+        a.CREATE_USERID as createUserId,
+        a.UPDATE_USERID as updateUserId,
+        a.INFO_COMPLETE as infoComplete,
+        a.DEL_FLAG as delFlag,
+        a.IDENTIFY AS identity,
+        d.HOUSENAME as preHouseName,
+        b.MC as provinceName,
+        c.MC as cityName,
+        e.MC as countyName,
+        a.SUBORDINATEUNIT_AREACODE as areaCode,
+        d.HOUSEID as rptHouseId, 
+        d.HOUSEIDSTR as rptHouseIdStr, 
+        d.HOUSENAME as rptHouseName, 
+        d.HOUSETYPE as rptHouseType, 
+        d.HOUSEPROVINCE as rptHouseProvince, 
+        d.HOUSECITY as rptHouseCity, 
+        d.HOUSECOUNTY as rptHouseCounty, 
+        d.HOUSEADD as rptHouseAddress, 
+        d.HOUSEZIP as rptHouseZipCode, 
+        d.HO_NAME as rptHouseOfficerName, 
+        d.HO_IDTYPE as rptHouseOfficerIdType, 
+        d.HO_ID as rptHouseOfficerId, 
+        d.HO_TEL as rptHouseOfficerTelephone, 
+        d.HO_MOBILE as rptHouseOfficerMobile, 
+        d.HO_EMAIL as rptHouseOfficerEmail, 
+        d.IDENTIFY as rptIdentity, 
+        d.SUBORDINATEUNIT_AREACODE as rptAreaCode,
+        d.RPTPROVINCENAME as rptProvinceName,
+		d.RPTCITYNAME as rptCityName,
+	  	d.RPTCOUNTYNAME as rptCountyName
+    </sql>
+    <select id="getHouseIndexList"  resultType="com.aotain.cu.serviceapi.dto.HouseInformationDTO" parameterType="com.aotain.cu.serviceapi.dto.HouseInformationDTO">
+        select <include refid="queryClums"/>
+        from (( IDC_ISMS_BASE_HOUSE a left join IDC_JCDM_XZQYDM b on a.HOUSEPROVINCE = b.CODE and b.CODELEVEL=1 )
+        left join IDC_JCDM_XZQYDM c on a.HOUSECITY = c.CODE and c.CODELEVEL=2 )
+        left join IDC_JCDM_XZQYDM d on a.HOUSECOUNTY = d.CODE and d.CODELEVEL=3
+        left JOIN IDC_JCDM_JFXZ e on a.HOUSETYPE = e.ID
+        WHERE 1 = 1
+        <if test="userAuthHouseList != null and userAuthHouseList.size > 0">
+          AND  a.HOUSEID in
+          	<foreach collection="userAuthHouseList" index="index" item="item" open="(" separator="," close=")">
+          		#{item}
+			</foreach> 
+        </if>
+        <if test="userAuthIdentityList != null and userAuthIdentityList.size > 0">
+          AND  a.IDENTIFY in
+          	<foreach collection="userAuthIdentityList" index="index" item="item" open="(" separator="," close=")">
+          		#{item}
+			</foreach> 
+        </if>
+        <!-- <if test="areaCodes != null and areaCodes != '' ">
+          AND split_areacode(SUBORDINATEUNIT_AREACODE, #{areaCodes}) = 1
+        </if> -->
+        <if test="houseName!=null and houseName!=''">
+          AND  a.HOUSENAME LIKE '%'||#{houseName}||'%'
+        </if>
+        <if test="houseIdStr!=null and houseIdStr!=''">
+            AND  a.HOUSEIDSTR LIKE '%'||#{houseIdStr}||'%'
+        </if>
+        <if test="dealFlag!=null">
+            AND a.DEAL_FLAG = #{dealFlag}
+        </if>
+        <if test="czlx!=null">
+            AND a.CZLX = #{czlx}
+        </if>
+        <if test="houseOfficerName!=null and houseOfficerName!=''">
+            AND a.HO_NAME  like '%'||#{houseOfficerName}||'%'
+        </if>
+        <if test="houseProvince!=null">
+            AND a.HOUSEPROVINCE = #{houseProvince}
+        </if>
+        <if test="houseCity!=null">
+            AND a.HOUSECITY = #{houseCity}
+        </if>
+        <if test="houseCounty!=null">
+            AND a.HOUSECOUNTY = #{houseCounty}
+        </if>
+        <if test="houseType!=null">
+            AND a.HOUSETYPE = #{houseType}
+        </if>
+        <if test="identity!=null">
+            AND a.IDENTIFY = #{identity}
+        </if>
+        <if test="startDate!=null and startDate!=''">
+            AND  #{startDate} &lt;= to_char(a.UPDATE_TIME,'yyyy-mm-dd')
+        </if>
+        <if test="endDate!=null and endDate!=''">
+            AND  #{endDate} &gt;= to_char(a.UPDATE_TIME,'yyyy-mm-dd')
+        </if>
+        <if test="jyzId!=null">
+            AND a.JYZID = #{jyzId}
+        </if>
+        ORDER  BY a.UPDATE_TIME DESC
+    </select>
+
+    <select id="getHouseInfoById" resultType="com.aotain.cu.serviceapi.dto.HouseInformationDTO" parameterType="com.aotain.cu.serviceapi.dto.HouseInformationDTO">
+        select <include refid="detailClums"/>
+        from (((IDC_ISMS_BASE_HOUSE a left join (
+        	select t.*,t1.mc as rptProvinceName,t2.mc as rptCityName,t3.mc as rptCountyName from RPT_ISMS_BASE_HOUSE t
+            left join IDC_JCDM_XZQYDM t1 on t.HOUSEPROVINCE = t1.CODE and t1.CODELEVEL = 1
+            left join IDC_JCDM_XZQYDM t2 on t.HOUSECITY = t2.CODE and t2.CODELEVEL = 2
+            left join IDC_JCDM_XZQYDM t3 on t.HOUSECOUNTY = t3.CODE and t3.CODELEVEL = 3 
+        ) d on  a.HOUSEID = d.HOUSEID )
+        left join IDC_JCDM_XZQYDM b on a.HOUSEPROVINCE = b.CODE and b.CODELEVEL=1 )
+        left join IDC_JCDM_XZQYDM c on a.HOUSECITY = c.CODE and c.CODELEVEL=2 )
+        left join IDC_JCDM_XZQYDM e on a.HOUSECOUNTY = e.CODE and e.CODELEVEL=3
+        WHERE a.HOUSEID = #{houseId}
+    </select>
+
+    <update id="updateForJyz" parameterType="java.lang.Integer">
+        update IDC_ISMS_BASE_HOUSE set DEAL_FLAG=0 where DEAL_FLAG=2 and JYZID=#{jyzId}
+    </update>
+
+    <sql id="baseSql">
+        HOUSEID,JYZID,HOUSEIDSTR,HOUSENAME,HOUSETYPE,HOUSEPROVINCE,HOUSECITY,
+        HOUSECOUNTY,HOUSEADD,HOUSEZIP,HO_NAME,HO_IDTYPE,HO_ID,HO_TEL,HO_MOBILE,
+        HO_EMAIL,CZLX,DEAL_FLAG,CREATE_TIME,UPDATE_TIME,CREATE_USERID,INFO_COMPLETE,
+        DEL_FLAG,ROOMID,CLUSTERID,SUBORDINATEUNIT_AREACODE,IDENTIFY,UPDATE_USERID,VERIFICATION_RESULT
+    </sql>
+
+    <select id="findByHouseId"  resultMap="baseMap">
+        SELECT
+        <include refid="baseSql"/>
+        FROM IDC_ISMS_BASE_HOUSE
+        WHERE HOUSEID = #{houseId,jdbcType=DECIMAL}
+    </select>
+
+    <select id="findByHouseName"  resultType="com.aotain.cu.serviceapi.dto.HouseInformationDTO">
+        select * from IDC_ISMS_BASE_HOUSE
+        WHERE HOUSENAME = #{houseName}
+        <if test="houseId!=null">
+            AND HOUSEID != #{houseId}
+        </if>
+    </select>
+
+    <select id="findByHouseIdStr"  resultType="com.aotain.cu.serviceapi.dto.HouseInformationDTO">
+        select * from IDC_ISMS_BASE_HOUSE
+        WHERE HOUSEIDSTR = #{houseIdStr}
+        <if test="houseId!=null">
+            AND HOUSEID != #{houseId}
+        </if>
+    </select>
+
+    <update id="updateHouseDealFlagByHouseId" parameterType="com.aotain.cu.serviceapi.model.HouseInformation">
+        UPDATE IDC_ISMS_BASE_HOUSE
+        SET
+        <if test="czlx!=null">
+            CZLX = #{czlx},
+        </if>
+        <if test="dealFlag!=null">
+            DEAL_FLAG = #{dealFlag}
+        </if>
+        WHERE HOUSEID = #{houseId}
+    </update>
+
+    <update id="updateDealFlagById" parameterType="com.aotain.cu.serviceapi.model.HouseInformation">
+        UPDATE IDC_ISMS_BASE_HOUSE
+        <set>
+        	<if test="dealFlag != null">
+                DEAL_FLAG = #{dealFlag},
+            </if>
+            <if test="czlx != null">
+               CZLX = #{czlx},
+            </if>
+            <if test="verificationResult != null">
+               VERIFICATION_RESULT = #{verificationResult},
+            </if>
+            UPDATE_TIME = sysdate
+        </set>
+        WHERE HOUSEID = #{houseId}
+    </update>
+
+    <insert id="insertHouseInformation" parameterType="com.aotain.cu.serviceapi.model.HouseInformation">
+		<selectKey keyProperty="houseId" resultType="java.lang.Long" order="BEFORE">
+			SELECT SEQ_ISMS_BASE_HOUSEID.NEXTVAL as houseId FROM dual
+		</selectKey>
+		insert into idc_isms_base_house
+			  (houseid, jyzid, houseidstr, housename, housetype, houseprovince, housecity, housecounty, 
+			  houseadd, housezip, ho_name, ho_idtype, ho_id, ho_tel, ho_mobile, ho_email, czlx, 
+			  deal_flag, create_time,update_time,create_userid,identify)
+		values
+			  (#{houseId}, #{jyzId}, #{houseIdStr}, #{houseName}, #{houseType}, #{houseProvince}, #{houseCity}, 
+			  #{houseCounty}, #{houseAddress}, #{houseZipCode}, #{houseOfficerName}, #{houseOfficerIdType}, #{houseOfficerId}, #{houseOfficerTelephone}, 
+			  #{houseOfficerMobile}, #{houseOfficerEmail}, '1', '0', sysdate,sysdate, #{createUserId},#{identity})
+	</insert>
+    
+    <update id="updateHouseInformation" parameterType="com.aotain.cu.serviceapi.model.HouseInformation">
+        UPDATE idc_isms_base_house
+        <set>
+            <if test="jyzId!=null">
+                JYZID=#{jyzId},
+            </if>
+            <if test="houseName!=null">
+                housename = #{houseName},
+            </if>
+            <if test="houseType!=null">
+                housetype = #{houseType},
+            </if>
+            <if test="houseProvince!=null">
+                houseprovince = #{houseProvince},
+            </if>
+            <if test="houseCity!=null">
+                housecity = #{houseCity},
+            </if>
+            <if test="houseCounty!=null">
+                housecounty = #{houseCounty},
+            </if>
+            <if test="houseAddress!=null">
+                houseadd = #{houseAddress},
+            </if>
+            <if test="houseZipCode!=null">
+                housezip = #{houseZipCode},
+            </if>
+            <if test="houseOfficerName!=null">
+                ho_name = #{houseOfficerName},
+            </if>
+            <if test="houseOfficerIdType!=null">
+                ho_idtype = #{houseOfficerIdType},
+            </if>
+            <if test="houseOfficerId!=null">
+                ho_id = #{houseOfficerId},
+            </if>
+            <if test="houseOfficerTelephone!=null">
+                ho_tel = #{houseOfficerTelephone},
+            </if>
+            <if test="houseOfficerMobile!=null">
+                ho_mobile = #{houseOfficerMobile},
+            </if>
+            <if test="houseOfficerEmail!=null">
+                ho_email = #{houseOfficerEmail},
+            </if>
+            <if test="updateUserId!=null">
+                UPDATE_USERID=#{updateUserId},
+            </if>
+            <if test="areaCode!=null">
+                subordinateunit_areacode=#{areaCode},
+            </if>
+            <if test="dealFlag != null">
+                DEAL_FLAG = #{dealFlag},
+            </if>
+            <if test="czlx != null">
+               CZLX = #{czlx},
+            </if>
+            UPDATE_TIME=sysdate,
+        </set>
+        WHERE HOUSEID=#{houseId}
+    </update>
+
+	<delete id="deleteByHouseId" parameterType="long">
+    	delete from idc_isms_base_house where houseid = #{houseId}
+    </delete>
+    
+    <select id="findHaveReportFrameAndIPsegConnectUserInfoByHouseId" parameterType="long" resultType="com.aotain.cu.serviceapi.model.UserInformation">
+    	select unitname unitName,idtype idType,idnumber idNumber from idc_isms_base_user_frame t where frameid in (
+       select frameid from idc_isms_base_house_frame t where houseId = #{houseId}
+		)
+		union
+		select username unitName,idtype idType,idnumber idNumber from idc_isms_base_house_ipseg where houseid = #{houseId} and ipType in (0,1,3,999) 
+    </select>
+    
+    <select id="integrityVerificationForHouseFrame" parameterType="long" resultType="int">
+    	select count(1) from idc_isms_base_house_frame where houseid = #{houseId} and del_flag = 0 and czlx != 3
+    </select>
+    
+    <select id="integrityVerificationForHouseLink" parameterType="long" resultType="int">
+    	select count(1) from idc_isms_base_house_gateway where houseid = #{houseId} and del_flag = 0 and czlx != 3
+    </select>
+    
+    <select id="integrityVerificationForHouseIPSeg" parameterType="long" resultType="int">
+    	select count(1) from idc_isms_base_house_ipseg where houseid = #{houseId} and del_flag = 0 and czlx != 3
+    </select>
+    
+     <select id="findAllHouseIdAndName" resultType="com.aotain.common.config.model.IdcHouses">
+		select 
+			a.houseid as HouseId,
+			a.houseidstr as HouseIdStr,
+			a.clusterid as ClusterId,
+			a.housename as houseName,
+			a.identify as Identity,
+			case when a.deal_flag = 5 or (a.czlx = 2) then 2 else 1 end as isReport,
+			b.idcid as IdcId
+		from idc_isms_base_house a
+		left join idc_isms_base_idc b on a.jyzid = b.jyzid
+		where a.del_flag = 0
+    </select>
+</mapper>

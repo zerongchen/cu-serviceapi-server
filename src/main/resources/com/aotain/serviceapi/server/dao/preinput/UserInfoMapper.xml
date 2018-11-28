@@ -1,0 +1,632 @@
+<?xml version="1.0" encoding="UTF-8"?>
+        <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.aotain.serviceapi.server.dao.preinput.UserInfoMapper">
+
+    <sql id="baseSql">
+        a.USERID AS userId,a.JYZID AS jyzId,a.USERCODE AS userCode,a.NATURE AS nature,a.UNITNAME AS unitName,
+        a.UNITNATURE AS unitNature,a.IDTYPE AS idType,a.IDNUMBER AS idNumber,a.OFFICER_EMAIL AS officerEmail,
+        a.OFFICER_MOBILE AS officerMobile,a.OFFICER_TEL AS officerTelphone,a.OFFICER_ID AS officerId,
+        a.OFFICER_IDTYPE AS officerIdType,a.OFFICER_NAME AS officerName,a.UNITADD AS unitAddress,
+        a.ZIPCODE AS unitZipCode,a.REGISTERTIME AS registeTime,a.SERVERREGISTERTIME AS serviceRegTime,
+        a.DEAL_FLAG AS dealFlag,a.CREATE_TIME AS createTime,a.UPDATE_TIME AS updateTime,a.CREATE_USERID AS createUserId,
+        a.INFO_COMPLETE AS infoComplete,a.DEL_FLAG AS delFlag,a.CZLX AS czlx,a.CLIENTID AS clientId,
+        a.UNITADDPROVINCEC AS unitAddressProvinceCode,
+        a.UNITADDCITYC AS unitAddressCityCode,
+        a.UNITADDAREAC AS unitAddressAreaCode,
+        a.IDENTIFY AS identify,a.VERIFICATION_RESULT AS verificationResult,
+        a.SUBORDINATEUNIT_AREACODE AS areaCode
+    </sql>
+
+    <sql id="rptSql">
+        b.NATURE AS rptNature,
+        b.NATURE AS rptNature,
+        b.UNITNAME AS rptUnitName,
+        b.UNITNATURE AS rptUnitNature,
+        b.IDTYPE AS rptIdType,
+        b.IDNUMBER AS rptIdNumber,
+        b.REGISTERTIME AS rptRegisteTime,
+        b.UNITADD AS rptUnitAddress,
+        b.ZIPCODE AS rptUnitZipCode,
+        b.OFFICER_NAME AS rptOfficerName,
+        b.OFFICER_IDTYPE AS rptOfficerIdType,
+        b.OFFICER_ID AS rptOfficerId,
+        b.OFFICER_TEL AS rptOfficerTelphone,
+        b.OFFICER_MOBILE AS rptOfficerMobile,
+        b.OFFICER_EMAIL AS rptOfficerEmail,
+        b.SERVERREGISTERTIME AS rptServiceRegTime
+    </sql>
+
+    <update id="updateForJyz" parameterType="java.lang.Integer">
+        update IDC_ISMS_BASE_USER set DEAL_FLAG=0 where DEAL_FLAG=2 and JYZID=#{jyzId}
+    </update>
+
+    <select id="findListByJyz" parameterType="java.lang.Integer" resultType="com.aotain.cu.serviceapi.model.UserInformation">
+    	select  USERID userId from IDC_ISMS_BASE_USER  where DEAL_FLAG=0 and JYZID=#{jyzId}
+    </select>
+    
+    <insert id="insertUserInfo" parameterType="com.aotain.cu.serviceapi.model.UserInformation">
+    
+        <selectKey keyProperty="userId" resultType="java.lang.Long" order="BEFORE">
+            SELECT SEQ_ISMS_BASE_USERID.NEXTVAL as userId FROM dual
+        </selectKey>
+        
+        insert into IDC_ISMS_BASE_USER
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            USERID,
+            <if test="jyzId != null">
+                JYZID,
+            </if>
+            <if test="userCode!=null">
+                USERCODE,
+            </if>
+            <if test="nature != null">
+                NATURE,
+            </if>
+            <if test="unitName != null">
+                UNITNAME,
+            </if>
+            <if test="unitNature != null">
+                UNITNATURE,
+            </if>
+            <if test="idType != null">
+                IDTYPE ,
+            </if>
+            <if test="idNumber != null">
+                IDNUMBER ,
+            </if>
+            <if test="officerEmail != null">
+                OFFICER_EMAIL,
+            </if>
+            <if test="officerMobile != null">
+                OFFICER_MOBILE,
+            </if>
+            <if test="officerTelphone != null">
+                OFFICER_TEL,
+            </if>
+            <if test="officerId != null">
+                OFFICER_ID,
+            </if>
+            <if test="officerIdType != null">
+                OFFICER_IDTYPE,
+            </if>
+            <if test="officerName != null">
+                OFFICER_NAME,
+            </if>
+            <if test="unitAddress != null">
+                UNITADD,
+            </if>
+            <if test="unitZipCode != null">
+                ZIPCODE,
+            </if>
+            <if test="registeTime != null">
+                REGISTERTIME,
+            </if>
+            <if test="serviceRegTime != null">
+                SERVERREGISTERTIME,
+            </if>
+                CREATE_TIME,
+                UPDATE_TIME,
+            <if test="createUserId != null">
+                CREATE_USERID,
+            </if>
+            <if test="updateUserId != null">
+                UPDATE_USERID,
+            </if>
+            <if test="unitAddressProvinceCode!=null">
+                UNITADDPROVINCEC,
+            </if>
+            <if test="unitAddressProvinceName!=null">
+                UNITADDPROVINCEN,
+            </if>
+            <if test="unitAddressCityCode!=null">
+                UNITADDCITYC,
+            </if>
+            <if test="unitAddressCityName!=null">
+                UNITADDCITYN,
+            </if>
+            <if test="unitAddressAreaCode!=null">
+                UNITADDAREAC,
+            </if>
+            <if test="unitAddressAreaName!=null">
+                UNITADDAREAN,
+            </if>
+            <if test="areaCode!=null">
+                SUBORDINATEUNIT_AREACODE,
+            </if>
+            <if test="identify!=null">
+                IDENTIFY,
+            </if>
+            <if test="operateType!=null">
+                CZLX,
+            </if>
+            <if test="clientId!=null">
+                CLIENTID,
+            </if>
+            <if test="infoComplete!=null">
+                INFO_COMPLETE,
+            </if>
+            <if test="dealFlag!=null">
+                DEAL_FLAG,
+            </if>
+            
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            #{userId},
+            <if test="jyzId != null">
+                #{jyzId},
+            </if>
+            <if test="userCode!=null">
+                #{userCode},
+            </if>
+            <if test="nature != null">
+                #{nature},
+            </if>
+            <if test="unitName != null">
+                #{unitName},
+            </if>
+            <if test="unitNature != null">
+                #{unitNature},
+            </if>
+            <if test="idType != null">
+                #{idType},
+            </if>
+            <if test="idNumber != null">
+                #{idNumber},
+            </if>
+            <if test="officerEmail != null">
+                #{officerEmail},
+            </if>
+            <if test="officerMobile != null">
+                #{officerMobile},
+            </if>
+            <if test="officerTelphone != null">
+                #{officerTelphone},
+            </if>
+            <if test="officerId != null">
+                #{officerId},
+            </if>
+            <if test="officerIdType != null">
+                #{officerIdType},
+            </if>
+            <if test="officerName != null">
+                #{officerName},
+            </if>
+            <if test="unitAddress != null">
+                #{unitAddress},
+            </if>
+            <if test="unitZipCode != null">
+                #{unitZipCode},
+            </if>
+            <if test="registeTime != null">
+                #{registeTime},
+            </if>
+            <if test="serviceRegTime != null">
+                #{serviceRegTime},
+            </if>
+                sysdate,
+                sysdate,
+    
+            <if test="createUserId != null">
+                #{createUserId},
+            </if>
+            <if test="updateUserId != null">
+                #{updateUserId},
+            </if>
+            <if test="unitAddressProvinceCode!=null">
+                #{unitAddressProvinceCode},
+            </if>
+            <if test="unitAddressProvinceName!=null">
+                #{unitAddressProvinceName},
+            </if>
+            <if test="unitAddressCityCode!=null">
+                #{unitAddressCityCode},
+            </if>
+            <if test="unitAddressCityName!=null">
+                #{unitAddressCityName},
+            </if>
+            <if test="unitAddressAreaCode!=null">
+                #{unitAddressAreaCode},
+            </if>
+            <if test="unitAddressAreaName!=null">
+                #{unitAddressAreaName},
+            </if>
+            <if test="areaCode!=null">
+                #{areaCode},
+            </if>
+            <if test="identify!=null">
+                #{identify},
+            </if>
+            <if test="operateType!=null">
+                #{operateType},
+            </if>
+            <if test="clientId!=null">
+                #{clientId},
+            </if>
+            <if test="infoComplete!=null">
+                #{infoComplete},
+            </if>
+            <if test="dealFlag!=null">
+                #{dealFlag},
+            </if>
+        </trim>
+    </insert>
+    
+    <insert id="insertUserBand" parameterType="com.aotain.cu.serviceapi.model.UserBandwidthInformation">
+    
+        <selectKey keyProperty="hhId" resultType="java.lang.Long" order="BEFORE">
+            SELECT SEQ_ISMS_BASE_USER_HHID.NEXTVAL as hhId FROM dual
+        </selectKey>
+        
+        insert into IDC_ISMS_BASE_USER_HH
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            HHID,
+            <if test="userId != null">
+                USERID,
+            </if>
+            <if test="houseId != null">
+                HOUSEID,
+            </if>
+            <if test="distributeTime != null">
+                DISTRIBUTETIME,
+            </if>
+            <if test="bandWidth != null">
+                BANDWIDTH,
+            </if>
+            
+                CREATE_TIME,
+                UPDATE_TIME,
+
+            <if test="createUserId != null">
+                CREATE_USERID,
+            </if>
+            <if test="updateUserId != null">
+                UPDATE_USERID,
+            </if>
+            <if test="operateType!=null">
+                CZLX,
+            </if>
+            <if test="dealFlag!=null">
+                DEAL_FLAG,
+            </if>
+            <if test="clientId!=null">
+                CLIENTID,
+            </if>
+            <if test="infoComplete!=null">
+                INFO_COMPLETE,
+            </if>
+            <if test="areaCode!=null">
+                SUBORDINATEUNIT_AREACODE,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            #{hhId},
+            <if test="userId != null">
+                #{userId},
+            </if>
+            <if test="houseId != null">
+                #{houseId},
+            </if>
+            <if test="distributeTime != null">
+                #{distributeTime},
+            </if>
+            <if test="bandWidth != null">
+                #{bandWidth},
+            </if>
+                sysdate,
+                sysdate,
+            <if test="createUserId != null">
+                #{createUserId},
+            </if>
+            <if test="updateUserId != null">
+                #{updateUserId},
+            </if>
+            <if test="operateType!=null">
+                #{operateType},
+            </if>
+            <if test="dealFlag!=null">
+                #{dealFlag},
+            </if>
+            <if test="clientId!=null">
+                #{clientId},
+            </if>
+            <if test="infoComplete!=null">
+                #{infoComplete},
+            </if>
+            <if test="areaCode!=null">
+                #{areaCode},
+            </if>
+        </trim>
+    </insert>
+    
+    <update id="updateUserInfo" parameterType="com.aotain.cu.serviceapi.model.UserInformation">
+        UPDATE IDC_ISMS_BASE_USER
+        <set>
+        <if test="jyzId != null">
+            JYZID=#{jyzId},
+        </if>
+        <if test="userCode!=null">
+            USERCODE=#{userCode},
+        </if>
+        <if test="nature != null">
+            NATURE=#{nature},
+        </if>
+        <if test="unitName != null">
+            UNITNAME=#{unitName},
+        </if>
+        <if test="unitNature != null">
+            UNITNATURE=#{unitNature},
+        </if>
+        <if test="idType != null">
+            IDTYPE=#{idType} ,
+        </if>
+        <if test="idNumber != null">
+            IDNUMBER=#{idNumber} ,
+        </if>
+        <if test="officerEmail != null">
+            OFFICER_EMAIL=#{officerEmail},
+        </if>
+        <if test="officerMobile != null">
+            OFFICER_MOBILE=#{officerMobile},
+        </if>
+        <if test="officerTelphone != null">
+            OFFICER_TEL=#{officerTelphone},
+        </if>
+        <if test="officerId != null">
+            OFFICER_ID=#{officerId},
+        </if>
+        <if test="officerIdType != null">
+            OFFICER_IDTYPE=#{officerIdType},
+        </if>
+        <if test="officerName != null">
+            OFFICER_NAME=#{officerName},
+        </if>
+        <if test="unitAddress != null">
+            UNITADD=#{unitAddress},
+        </if>
+        <if test="unitZipCode != null">
+            ZIPCODE=#{unitZipCode},
+        </if>
+        <if test="registeTime != null">
+            REGISTERTIME=#{registeTime},
+        </if>
+        <if test="serviceRegTime != null">
+            SERVERREGISTERTIME=#{serviceRegTime},
+        </if>
+            UPDATE_TIME=sysdate,
+        <if test="createUserId != null">
+            CREATE_USERID=#{createUserId},
+        </if>
+        <if test="updateUserId != null">
+            UPDATE_USERID=#{updateUserId},
+        </if>
+        <if test="unitAddressProvinceCode!=null">
+            UNITADDPROVINCEC=#{unitAddressProvinceCode},
+        </if>
+        <if test="unitAddressProvinceName!=null">
+            UNITADDPROVINCEN=#{unitAddressProvinceName},
+        </if>
+        <!-- <if test="unitAddressCityCode!=null">
+            UNITADDCITYC=#{unitAddressCityCode},
+        </if> -->
+        UNITADDCITYC=#{unitAddressCityCode,jdbcType=VARCHAR},
+        <if test="unitAddressCityName!=null">
+            UNITADDCITYN=#{unitAddressCityName},
+        </if>
+        <!-- <if test="unitAddressAreaCode!=null">
+            UNITADDAREAC=#{unitAddressAreaCode},
+        </if> -->
+         UNITADDAREAC=#{unitAddressAreaCode,jdbcType=VARCHAR},
+        <if test="unitAddressAreaName!=null">
+            UNITADDAREAN=#{unitAddressAreaName},
+        </if>
+        <if test="areaCode!=null">
+            SUBORDINATEUNIT_AREACODE=#{areaCode},
+        </if>
+        <if test="identify!=null">
+            IDENTIFY=#{identify},
+        </if>
+        <if test="operateType!=null">
+            CZLX=#{operateType},
+        </if>
+        <if test="clientId!=null">
+            CLIENTID=#{clientId},
+        </if>
+        <if test="infoComplete!=null">
+            INFO_COMPLETE=#{infoComplete},
+        </if>
+            <if test="dealFlag!=null">
+                DEAL_FLAG=#{dealFlag},
+            </if>
+        </set>
+        WHERE USERID=#{userId}
+    </update>
+    
+    <select id="findUserInfoByUserId" parameterType="long" resultType="com.aotain.cu.serviceapi.model.UserInformation">
+    	select  jyzId jyzId,userid userId,t.unitname unitName,t.nature nature,t.subordinateunit_areacode areaCode,t.czlx czlx,t.deal_flag dealFlag,idType idType,idNumber idNumber
+            from IDC_ISMS_BASE_USER t where t.userid = #{userId}	
+    </select>
+
+    <select id="getUserById" parameterType="long" resultType="com.aotain.cu.serviceapi.dto.UserInformationDTO">
+        SELECT <include refid="baseSql"/>,
+        a.UNITADDPROVINCEN AS unitAddressProvinceName,
+        a.UNITADDCITYN AS unitAddressCityName,
+        a.UNITADDAREAN AS unitAddressAreaName
+            from IDC_ISMS_BASE_USER a where a.userid = #{userId}
+    </select>
+
+    <select id="findByUserId" parameterType="string" resultType="com.aotain.cu.serviceapi.dto.UserInformationDTO">
+        select
+            <include refid="baseSql"/>,
+            <include refid="rptSql"/>,
+        a.UNITADDPROVINCEN AS unitAddressProvinceName,
+        a.UNITADDCITYN AS unitAddressCityName,
+        a.UNITADDAREAN AS unitAddressAreaName
+        from IDC_ISMS_BASE_USER a
+        left join RPT_ISMS_BASE_USER b ON a.USERID = b.USERID
+        where a.userid = #{userId}
+    </select>
+
+    <delete id="deleteByUserId" parameterType="long">
+    	delete from idc_isms_base_user where userid not in (
+         select userid from idc_isms_base_user where czlx=2
+         union
+         select userid from idc_isms_base_user where czlx=1 and deal_flag=5 
+  		)  and userid=#{userId}
+    </delete>
+    
+    <select id="findHaveReportFrameAndIPsegConnectUserInfoByUserInfo" parameterType="com.aotain.cu.serviceapi.model.UserInformation" resultType="com.aotain.cu.serviceapi.model.HouseInformation">
+    	select houseid houseId,houseName houseName,czlx czlx,deal_flag dealFlag from idc_isms_base_house
+               where houseid in (
+                     select distinct houseid from idc_isms_base_house_ipseg  t where iptype!=2
+                          <if test="unitName!=null and unitName!=''">
+                              and username = #{unitName}
+                          </if>
+                          and idtype is  null
+ 						union
+					 select distinct houseid from idc_isms_base_house_ipseg  where iptype!=2
+                            <if test="unitName!=null and unitName!=''">
+                                and username = #{unitName}
+                            </if>
+                            <if test="idType!=null and idType!=''">
+                                and idType = #{idType}
+                            </if>
+                            <if test="idNumber!=null and idNumber!=''">
+                                and idnumber = #{idNumber}
+                            </if>
+
+ 						union
+ 					 select distinct houseid from idc_isms_base_user_frame  where 1 = 1
+                            <if test="unitName!=null and unitName!=''">
+                                and unitname = #{unitName}
+                            </if>
+                            <if test="idType!=null and idType!=''">
+                                and idType = #{idType}
+                            </if>
+                            <if test="idNumber!=null and idNumber!=''">
+                                and idnumber = #{idNumber}
+                            </if>
+ 						union
+  					 select distinct houseid from idc_isms_base_user_frame where 1=1
+                        <if test="unitName!=null and unitName!=''">
+                            and unitname = #{unitName}
+                        </if>
+                        and idtype is  null
+               )
+    </select>
+    
+    <update id="updateDealFlagByUserId" parameterType="com.aotain.cu.serviceapi.model.UserInformation">
+    	update idc_isms_base_user
+    	<set>
+        	<if test="dealFlag != null">
+                DEAL_FLAG = #{dealFlag},
+            </if>
+            <if test="czlx != null">
+               CZLX = #{czlx},
+            </if>
+            <if test="verificationResult != null">
+               VERIFICATION_RESULT = #{verificationResult},
+            </if>
+            UPDATE_TIME = sysdate
+        </set>
+    	where userid =#{userId}
+    </update>
+    <update id="UpdateDealFlagAndCzlxByUserId" parameterType="map">
+    	update idc_isms_base_user set czlx=#{czlx},deal_flag=#{dealFlag} where userid=#{userId} and userid in (
+         select userid from idc_isms_base_user where czlx=2
+         union
+         select userid from idc_isms_base_user where czlx=1 and deal_flag=5
+  		 )
+    </update>
+
+    <select id="getNatureByUserId" parameterType="java.lang.Long" resultType="java.lang.Integer">
+        SELECT NATURE FROM IDC_ISMS_BASE_USER where USERID=#{userId}
+    </select>
+
+    <select id="listData" parameterType="com.aotain.cu.serviceapi.dto.UserInformationDTO" resultType="com.aotain.cu.serviceapi.dto.UserInformationDTO">
+        SELECT
+        <include refid="baseSql"/>,
+        e.MC AS unitAddressProvinceName,
+        f.MC AS unitAddressCityName,
+        g.MC AS unitAddressAreaName,
+        b.ZIPCODE AS rptUnitZipCode,
+        b.OFFICER_MOBILE AS rptOfficerMobile
+        FROM (( idc_isms_base_user a left join IDC_JCDM_XZQYDM e on a.unitaddprovincec = e.CODE and e.CODELEVEL=1 )
+        left join IDC_JCDM_XZQYDM f on a.unitaddcityc = f.CODE and f.CODELEVEL=2 )
+        left join IDC_JCDM_XZQYDM g on a.unitaddareac = g.CODE and g.CODELEVEL=3
+        left join RPT_ISMS_BASE_USER b ON a.USERID = b.USERID
+        left join (select userid,wm_concat(houseid) as houseid from idc_isms_base_user_hh group by userid) c ON a.USERID = c.USERID
+        WHERE 1 = 1
+        <if test="houseIDs != null and houseIDs != '' ">
+            AND split_areacode(c.HOUSEID, ${houseIDs}) = 1
+        </if>
+        <if test="authIdentities != null and authIdentities != '' ">
+          	AND split_areacode(a.IDENTIFY, #{authIdentities}) = 1
+        </if>
+        <if test="areaCodes != null and areaCodes != '' ">
+          	AND split_areacode(a.SUBORDINATEUNIT_AREACODE, #{areaCodes}) = 1
+        </if>
+        <if test="unitName!=null and unitName !='' ">
+            AND a.UNITNAME like concat(concat('%',#{unitName}),'%')
+        </if>
+        <if test="nature!=null">
+            AND a.NATURE = #{nature}
+        </if>
+        <!--<if test="identify!=null and identify!='' ">-->
+            <!--AND a.IDENTIFY = #{identify}-->
+        <!--</if>-->
+        <if test="dealFlag!=null ">
+            AND a.DEAL_FLAG = #{dealFlag}
+        </if>
+        <if test="czlx!=null">
+            AND a.CZLX = #{czlx}
+        </if>
+        <if test="officerName!=null and officerName !='' ">
+            AND a.OFFICER_NAME like concat(concat('%',#{officerName}),'%')
+        </if>
+        <if test="unitAddress!=null and unitAddress !='' ">
+            AND a.UNITADD like concat(concat('%',#{unitAddress}),'%')
+        </if>
+        <if test="delFlag!=null ">
+            AND a.DEL_FLAG = #{delFlag}
+        </if>
+        <if test="identify!=null and identify!='' ">
+            AND instr(a.identify||',',#{identify}||',')&gt;0
+        </if>
+        <if test="startDate!=null and startDate!=''">
+            AND  #{startDate} &lt;= to_char(a.UPDATE_TIME,'yyyy-mm-dd')
+        </if>
+        <if test="endDate!=null and endDate!=''">
+            AND  #{endDate} &gt;= to_char(a.UPDATE_TIME,'yyyy-mm-dd')
+        </if>
+        ORDER  BY a.UPDATE_TIME DESC
+    </select>
+    
+    <select id="getDataByUserName" parameterType="string"
+            resultType="com.aotain.cu.serviceapi.dto.UserInformationDTO">
+        SELECT
+        <include refid="baseSql"/>,
+        a.UNITADDPROVINCEN AS unitAddressProvinceName,
+        a.UNITADDCITYN AS unitAddressCityName,
+        a.UNITADDAREAN AS unitAddressAreaName
+        FROM idc_isms_base_user a
+        WHERE 1 = 1
+            AND a.UNITNAME = #{userName} AND rownum=1
+    </select>
+    
+    <select id="getUserIdByUserName" parameterType="java.lang.String">
+        SELECT USERID from IDC_ISMS_BASE_USER where UNITNAME = #{userName} AND rownum=1
+    </select>
+    
+    <select id="integrityVerificationForUserService" parameterType="long" resultType="int">
+    	select count(1) from idc_isms_base_user_service where userid = #{userId} and del_flag = 0 and czlx != 3
+    </select>
+    
+    <select id="integrityVerificationForUserBandwidth" parameterType="long" resultType="int">
+    	select count(1) from idc_isms_base_user_hh where userid = #{userId} and del_flag = 0 and czlx != 3
+    </select>
+    
+    <select id="integrityVerificationForUserVirtuals" parameterType="long" resultType="int">
+    	select count(1) from idc_isms_base_service_virtual where userid = #{userId} and del_flag = 0 and czlx != 3
+    </select>
+</mapper>

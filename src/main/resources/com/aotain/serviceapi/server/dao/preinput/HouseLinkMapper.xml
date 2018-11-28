@@ -1,0 +1,312 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.aotain.serviceapi.server.dao.preinput.HouseLinkMapper">
+
+    <resultMap id="baseMap" type="com.aotain.cu.serviceapi.model.HouseGatewayInformation">
+        <result column="GATEWAYID" jdbcType="DECIMAL" property="gatewayId" />
+        <result column="HOUSEID" jdbcType="DECIMAL" property="houseId" />
+        <result column="BANDWIDTH" jdbcType="DECIMAL" property="bandWidth" />
+        <result column="GATEWAYIP" jdbcType="VARCHAR" property="gatewayIP" />
+        <result column="LINKTYPE" jdbcType="DECIMAL" property="linkType" />
+        <result column="ACCESSUNIT" jdbcType="VARCHAR" property="accessUnit" />
+        <result column="CZLX" jdbcType="DECIMAL" property="czlx" />
+        <result column="DEAL_FLAG" jdbcType="DECIMAL" property="dealFlag" />
+        <result column="CREATE_TIME" jdbcType="TIMESTAMP" property="createTime" />
+        <result column="UPDATE_TIME" jdbcType="TIMESTAMP" property="updateTime" />
+        <result column="CREATE_USERID" jdbcType="DECIMAL" property="createUserId" />
+        <!--<result column="HOUSENO" jdbcType="DECIMAL" property="house" />-->
+        <result column="LINKNO" jdbcType="DECIMAL" property="linkNo" />
+        <result column="DEL_FLAG" jdbcType="DECIMAL" property="delFlag" />
+        <!--<result column="ROOMID" jdbcType="DECIMAL" property="" />
+        <result column="LINKID" jdbcType="DECIMAL" property="" />-->
+        <!--<result column="SUBORDINATEUNIT_AREACODE" jdbcType="DECIMAL" property="" />-->
+        <result column="UPDATE_USERID" jdbcType="TIMESTAMP" property="updateUserId" />
+    </resultMap>
+
+    <sql id="baseSql">
+        GATEWAYID,HOUSEID,BANDWIDTH,GATEWAYIP,LINKTYPE,ACCESSUNIT,CZLX,
+        DEAL_FLAG,CREATE_TIME,UPDATE_TIME,CREATE_USERID,LINKNO,DEL_FLAG,UPDATE_USERID,
+        HOUSENO,ROOMID,LINKID,SUBORDINATEUNIT_AREACODE
+    </sql>
+
+    <select id="findByLinkNoAndId" parameterType="com.aotain.cu.serviceapi.dto.HouseGatewayInformationDTO" resultMap="baseMap">
+        SELECT
+        <include refid="baseSql"/>
+        FROM IDC_ISMS_BASE_HOUSE_GATEWAY
+        WHERE LINKNO = #{linkNo}
+        <if test="gatewayId != null">
+            AND GATEWAYID != #{gatewayId}
+        </if>
+    </select>
+
+    <select id="findByLinkNo" parameterType="string" resultMap="baseMap">
+        SELECT
+        <include refid="baseSql"/>
+        FROM IDC_ISMS_BASE_HOUSE_GATEWAY
+        WHERE LINKNO = #{linkNo}
+    </select>
+    
+    <select id="findByLinkId" parameterType="long" resultMap="baseMap">
+        SELECT
+        <include refid="baseSql"/>
+        FROM IDC_ISMS_BASE_HOUSE_GATEWAY
+        WHERE GATEWAYID = #{linkId}
+    </select>
+
+    <insert id="insertSelective" parameterType="com.aotain.cu.serviceapi.model.HouseGatewayInformation">
+        <selectKey keyProperty="gatewayId" resultType="long" order="BEFORE">
+            SELECT SEQ_ISMS_BASE_HOUSE_GATEWAYID.Nextval as gatewayId from DUAL
+        </selectKey>
+        insert into IDC_ISMS_BASE_HOUSE_GATEWAY
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="gatewayId != null" >
+                GATEWAYID,
+            </if>
+            <if test="houseId != null">
+                HOUSEID,
+            </if>
+            <if test="bandWidth != null">
+                BANDWIDTH,
+            </if>
+            <if test="gatewayIP != null">
+                GATEWAYIP,
+            </if>
+            <if test="linkType != null">
+                LINKTYPE,
+            </if>
+            <if test="accessUnit != null">
+                ACCESSUNIT,
+            </if>
+            <if test="czlx != null">
+                CZLX,
+            </if>
+            <if test="dealFlag != null">
+                DEAL_FLAG,
+            </if>
+            <if test="createUserId != null">
+                CREATE_USERID,
+            </if>
+            <if test="linkNo != null">
+                LINKNO,
+            </if>
+            CREATE_TIME
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="gatewayId != null">
+                #{gatewayId,jdbcType=DECIMAL},
+            </if>
+            <if test="houseId != null">
+                #{houseId,jdbcType=DECIMAL},
+            </if>
+            <if test="bandWidth != null">
+                #{bandWidth,jdbcType=DECIMAL},
+            </if>
+            <if test="gatewayIP != null and gatewayIP != '' ">
+                #{gatewayIP,jdbcType=VARCHAR},
+            </if>
+            <if test="linkType != null  ">
+                #{linkType,jdbcType=DECIMAL},
+            </if>
+            <if test="accessUnit != null and accessUnit != '' ">
+                #{accessUnit,jdbcType=VARCHAR},
+            </if>
+            <if test="czlx != null">
+                #{czlx,jdbcType=DECIMAL},
+            </if>
+            <if test="dealFlag != null">
+                #{dealFlag,jdbcType=DECIMAL},
+            </if>
+            <if test="createUserId!=null">
+                #{createUserId,jdbcType=DECIMAL},
+            </if>
+            <if test="linkNo!=null">
+                #{linkNo,jdbcType=VARCHAR},
+            </if>
+            sysdate
+        </trim>
+    </insert>
+
+    <update id="updateHouseGatewayByLinkNo" parameterType="com.aotain.cu.serviceapi.model.HouseGatewayInformation">
+        update IDC_ISMS_BASE_HOUSE_GATEWAY
+        <set>
+            <if test="houseId != null">
+                HOUSEID = #{houseId,jdbcType=DECIMAL},
+            </if>
+            <if test="bandWidth != null">
+                BANDWIDTH = #{bandWidth,jdbcType=DECIMAL},
+            </if>
+            <if test="gatewayIP != null and gatewayIP != '' ">
+                GATEWAYIP = #{gatewayIP,jdbcType=VARCHAR},
+            </if>
+            <if test="linkType != null  ">
+                LINKTYPE = #{linkType,jdbcType=DECIMAL},
+            </if>
+            <if test="accessUnit != null and accessUnit != '' ">
+                ACCESSUNIT = #{accessUnit,jdbcType=VARCHAR},
+            </if>
+            <if test="czlx != null">
+                CZLX = #{czlx,jdbcType=DECIMAL},
+            </if>
+            <if test="dealFlag != null">
+                DEAL_FLAG = #{dealFlag,jdbcType=DECIMAL},
+            </if>
+            UPDATE_TIME = sysdate,
+            deal_flag=0,
+            <if test="updateUserId!=null">
+                UPDATE_USERID = #{updateUserId,jdbcType=DECIMAL},
+            </if>
+            <if test="linkNo != null and linkNo!=''">
+		   	    LINKNO = #{linkNo,jdbcType=VARCHAR},
+			</if>
+            <if test="areaCode!=null">
+            	subordinateunit_areacode =#{areaCode}
+            </if>
+        </set>
+        where GATEWAYID = #{gatewayId}
+    </update>
+    
+    <insert id="insertLinkInformation" parameterType="com.aotain.cu.serviceapi.model.HouseGatewayInformation">
+		<selectKey keyProperty="gatewayId" resultType="java.lang.Long" order="BEFORE">
+			SELECT SEQ_ISMS_BASE_HOUSE_GATEWAYID.NEXTVAL as gatewayId FROM dual
+		</selectKey>
+			insert into idc_isms_base_house_gateway
+				(gatewayid, bandwidth, gatewayip, houseid, czlx, deal_flag, linktype,accessunit,linkno,create_userid,create_time,update_time,subordinateunit_areacode)
+			values
+				(#{gatewayId}, #{bandWidth}, #{gatewayIP}, #{houseId}, '1', '0','1',(select idcname from (select idcname,rownum r from idc_isms_base_idc )where r=1),#{linkNo},#{createUserId}, sysdate,sysdate,#{areaCode})
+	</insert>
+
+    <sql id="queryColumns" >
+        a.GATEWAYID as  gatewayId,
+        a.HOUSEID as houseId,
+        a.BANDWIDTH as bandWidth,
+        a.GATEWAYIP as  gatewayIP,
+        a.LINKTYPE as linkType,
+        a.ACCESSUNIT as accessUnit,
+        a.LINKNO as linkNo,
+        a.CZLX as czlx,
+        a.DEAL_FLAG as dealFlag,
+        a.CREATE_TIME as createTime,
+        a.UPDATE_TIME as updateTime,
+        a.CREATE_USERID as createUserId,
+        a.UPDATE_USERID as updateUserId,
+        a.DEL_FLAG as delFlag,
+        b.BANDWIDTH as preBandWidth,
+        c.HOUSENAME as houseName,
+        a.SUBORDINATEUNIT_AREACODE as areaCode,
+        b.GATEWAYID as rptgGatewayId, 
+		b.HOUSEID as rptHouseId, 
+		b.BANDWIDTH as rptBandWidth, 
+		b.GATEWAYIP as rptGatewayIP, 
+		b.LINKTYPE as rptLinkType, 
+		b.ACCESSUNIT as rptAccessUnit, 
+		b.LINKNO as rptLinkNo, 
+		b.SUBORDINATEUNIT_AREACODE as rptAreaCode
+    </sql>
+
+    <select id="getIndexHouseLink" resultType="com.aotain.cu.serviceapi.dto.HouseGatewayInformationDTO" parameterType="com.aotain.cu.serviceapi.dto.HouseGatewayInformationDTO">
+        SELECT <include refid="queryColumns"/>
+        FROM IDC_ISMS_BASE_HOUSE_GATEWAY a LEFT JOIN RPT_ISMS_BASE_HOUSE_GATEWAY b ON a.GATEWAYID=b.GATEWAYID,
+         IDC_ISMS_BASE_HOUSE c
+        WHERE a.houseId = c.houseId
+        <if test="userAuthHouseList != null and userAuthHouseList.size > 0">
+          AND  a.HOUSEID in
+          	<foreach collection="userAuthHouseList" index="index" item="item" open="(" separator="," close=")">
+          		#{item}
+			</foreach> 
+        </if>
+        <!-- AND a.HOUSEID in (
+            select HOUSEID FROM IDC_ISMS_BASE_HOUSE
+            where 1 = 1
+            <if test="authIdentities != null and authIdentities != '' ">
+                and split_areacode(IDENTIFY, #{authIdentities}) = 1
+            </if>
+            <if test="areaCodes != null and areaCodes != '' ">
+                and split_areacode(SUBORDINATEUNIT_AREACODE, #{areaCodes}) = 1
+            </if>
+            <if test="userAuthHouseList != null and userAuthHouseList.size > 0">
+                AND HOUSEID in
+                <foreach collection="userAuthHouseList" index="index" item="item" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+        ) -->
+        <if test="areaCodes != null and areaCodes != '' ">
+          AND split_areacode(a.SUBORDINATEUNIT_AREACODE, #{areaCodes}) = 1
+        </if>
+         <if test="bandWidth!=null and bandWidth!=''">
+          AND a.BANDWIDTH = #{bandWidth}
+        </if>
+        <if test="linkNo!=null and linkNo!=''">
+          AND a.LINKNO LIKE '%'||#{linkNo}||'%'
+        </if>
+        <if test="gatewayIP!=null and gatewayIP!=''">
+            AND a.GATEWAYIP LIKE '%'||#{gatewayIP}||'%'
+        </if>
+        <if test="dealFlag!=null">
+            AND a.DEAL_FLAG = #{dealFlag}
+        </if>
+        <if test="houseId!=null">
+            AND a.HOUSEID = #{houseId}
+        </if>
+        <if test="dealFlag!=null">
+            AND a.DEAL_FLAG = #{dealFlag}
+        </if>
+        <if test="czlx!=null">
+            AND a.CZLX = #{czlx}
+        </if>
+        <if test="startDate!=null and startDate!=''">
+            AND  #{startDate} &lt;= to_char(a.UPDATE_TIME,'yyyy-mm-dd')
+        </if>
+        <if test="endDate!=null and endDate!=''">
+            AND  #{endDate} &gt;= to_char(a.UPDATE_TIME,'yyyy-mm-dd')
+        </if>
+        <if test="houseName!=null ">
+            AND c.HOUSENAME  LIKE '%'||#{houseName}||'%'
+        </if>
+        <if test="houseIDs!=null and houseIDs!=''">
+            and c.HOUSEID in ( ${houseIDs} )
+        </if>
+        ORDER  BY a.UPDATE_TIME DESC
+    </select>
+    <delete id="deleteByHouseId" parameterType="long">
+    	delete from idc_isms_base_house_gateway where houseid = #{houseId}
+    </delete>
+    
+    <delete id="deleteByLinkIdOrLinkNo" >
+    	delete from idc_isms_base_house_gateway 
+    	WHERE 1 = 1
+        <if test="linkId != null">
+            and GATEWAYID = #{linkId, jdbcType=INTEGER}
+        </if>
+        <if test="linkNo != null">
+		   	and LINKNO = #{linkNo, jdbcType=VARCHAR}
+		</if>
+    </delete>
+    
+    <select id="findByLinkIdOrLinkNo" resultMap="baseMap">
+        SELECT
+        <include refid="baseSql"/>
+        FROM IDC_ISMS_BASE_HOUSE_GATEWAY
+        WHERE 1 = 1
+        <if test="linkId != null">
+            and GATEWAYID = #{linkId, jdbcType=INTEGER}
+        </if>
+        <if test="linkNo != null">
+		   	and LINKNO = #{linkNo, jdbcType=VARCHAR}
+		</if>
+    </select>
+
+	<update id="updateLinkStatusByLinkId" parameterType="map">
+		update IDC_ISMS_BASE_HOUSE_GATEWAY
+		<set>
+			<if test="czlx != null">
+				czlx = #{czlx},
+			</if>
+			<if test="dealFlag != null">
+				deal_flag = #{dealFlag}
+			</if>
+		</set>
+		where GATEWAYID = #{linkId}
+</update>
+</mapper>

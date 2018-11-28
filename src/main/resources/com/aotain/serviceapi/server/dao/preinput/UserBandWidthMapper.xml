@@ -1,0 +1,298 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.aotain.serviceapi.server.dao.preinput.UserBandWidthMapper">
+  <resultMap id="BaseResultMap" type="com.aotain.cu.serviceapi.dto.UserBandwidthInformationDTO">
+    <id column="HHID" jdbcType="DECIMAL" property="hhId" />
+    <result column="USERID" jdbcType="DECIMAL" property="userId" />
+    <result column="HOUSEID" jdbcType="DECIMAL" property="houseId" />
+    <result column="DISTRIBUTETIME" jdbcType="VARCHAR" property="distributeTime" />
+    <result column="BANDWIDTH" jdbcType="DECIMAL" property="bandWidth" />
+    <result column="CZLX" jdbcType="DECIMAL" property="czlx" />
+    <result column="DEAL_FLAG" jdbcType="DECIMAL" property="dealFlag" />
+    <result column="DEL_FLAG" jdbcType="DECIMAL" property="delFlag" />
+    <result column="SUBORDINATEUNIT_AREACODE" jdbcType="VARCHAR" property="areaCode" />
+    <result column="INFO_COMPLETE" jdbcType="VARCHAR" property="infoComplete" />
+    <result column="CREATE_TIME" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="UPDATE_TIME" jdbcType="TIMESTAMP" property="updateTime" />
+    <result column="CREATE_USERID" jdbcType="DECIMAL" property="createUserId" />
+    <result column="UPDATE_USERID" jdbcType="DECIMAL" property="updateUserId" />
+    <result column="HOUSENAME" jdbcType="VARCHAR" property="houseName" />
+    <result column="rptHhId" jdbcType="DECIMAL" property="rptHhId" />
+    <result column="rptUserId" jdbcType="DECIMAL" property="rptUserId" />
+    <result column="rptHouseId" jdbcType="DECIMAL" property="rptHouseId" />
+    <result column="rptDistributeTime" jdbcType="VARCHAR" property="rptDistributeTime" />
+    <result column="rptBandWidth" jdbcType="DECIMAL" property="rptBandWidth" />
+    <result column="rptAreaCode" jdbcType="VARCHAR" property="rptAreaCode" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    a.HHID, 
+    a.USERID, 
+    a.HOUSEID, 
+    a.DISTRIBUTETIME, 
+    a.BANDWIDTH, 
+    a.CREATE_TIME, 
+    a.UPDATE_TIME, 
+    a.CREATE_USERID,
+    a.UPDATE_USERID,
+    a.CZLX,
+    a.DEAL_FLAG,
+    a.SUBORDINATEUNIT_AREACODE,
+    a.INFO_COMPLETE
+  </sql>
+  <sql id="baseRptSql">
+    a.HHID, 
+    a.USERID, 
+    a.HOUSEID, 
+    a.DISTRIBUTETIME, 
+    a.BANDWIDTH, 
+    a.CREATE_TIME, 
+    a.UPDATE_TIME, 
+    a.CREATE_USERID,
+    a.UPDATE_USERID,
+    a.CZLX,
+    a.DEAL_FLAG,
+    a.SUBORDINATEUNIT_AREACODE,
+    a.INFO_COMPLETE,
+    b.UNITNAME,
+    c.HOUSENAME,
+    d.HHID as rptHhId,
+	d.USERID as rptUserId,
+	d.HOUSEID as rptHouseId,
+	d.DISTRIBUTETIME as rptDistributeTime,
+	d.BANDWIDTH as rptBandWidth,
+	d.SUBORDINATEUNIT_AREACODE as rptAreaCode
+  </sql>
+  <select id="getUserBandWidthList" parameterType="com.aotain.cu.serviceapi.dto.UserBandwidthInformationDTO" resultMap="BaseResultMap">
+    select <include refid="baseRptSql" />
+    from idc_isms_base_user_hh a 
+    left join rpt_isms_base_user_bandwidth d on a.hhid = d.hhid
+    left join IDC_ISMS_BASE_HOUSE c on a.HOUSEID = c.HOUSEID,
+    IDC_ISMS_BASE_USER b
+    where a.USERID = b.USERID
+    <if test="userId!=null">
+      and a.USERID = #{userId}
+    </if>
+    AND a.USERID in (
+      select userid from idc_isms_base_user usr
+      where 1 = 1
+      <if test="authIdentities != null and authIdentities != '' ">
+        and split_areacode(usr.IDENTIFY, #{authIdentities}) = 1
+      </if>
+      <if test="areaCodes != null and areaCodes != '' ">
+        and split_areacode(usr.SUBORDINATEUNIT_AREACODE, #{areaCodes}) = 1
+      </if>
+    )
+
+    <if test="userAuthHouseList != null and userAuthHouseList.size > 0">
+         AND  a.HOUSEID in
+         <foreach collection="userAuthHouseList" index="index" item="item" open="(" separator="," close=")">
+         	#{item}
+		</foreach> 
+    </if>
+    <if test="areaCodes != null and areaCodes != '' ">
+       	AND split_areacode(a.SUBORDINATEUNIT_AREACODE, #{areaCodes}) = 1
+    </if>
+    <if test="unitName!=null and unitName!=''">
+        and b.UNITNAME like '%'||#{unitName}||'%'
+    </if>
+    <if test="houseIDs!=null and houseIDs!=''">
+      and c.HOUSEID in ( ${houseIDs} )
+    </if>
+    <if test="dealFlag!=null">
+      and a.DEAL_FLAG =#{dealFlag}
+    </if>
+    <if test="czlx!=null ">
+      and a.CZLX =#{czlx}
+    </if>
+    <if test="bandWidth!=null and bandWidth!=''">
+      and a.BANDWIDTH =#{bandWidth}
+    </if>
+    <if test="distributeTime!=null and distributeTime!=''">
+      and a.DISTRIBUTETIME = #{distributeTime}
+    </if>
+    <if test="startDate!=null and startDate!=''">
+      AND  #{startDate} &lt;= to_char(a.UPDATE_TIME,'yyyy-mm-dd')
+    </if>
+    <if test="endDate!=null and endDate!=''">
+      AND  #{endDate} &gt;= to_char(a.UPDATE_TIME,'yyyy-mm-dd')
+    </if>
+    ORDER  BY a.UPDATE_TIME DESC
+  </select>
+
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from RPT_ISMS_BASE_USER_BANDWIDTH
+    where HHID = #{hhId,jdbcType=DECIMAL}
+  </delete>
+
+  <insert id="insert" parameterType="com.aotain.cu.serviceapi.model.UserBandwidthInformation">
+
+    <selectKey keyProperty="hhId" resultType="java.lang.Long" order="BEFORE">
+      SELECT SEQ_ISMS_BASE_USER_HHID.NEXTVAL as hhId FROM dual
+    </selectKey>
+
+    insert into IDC_ISMS_BASE_USER_HH
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      HHID,
+      <if test="userId != null">
+        USERID,
+      </if>
+      <if test="houseId != null">
+        HOUSEID,
+      </if>
+      <if test="distributeTime != null">
+        DISTRIBUTETIME,
+      </if>
+      <if test="bandWidth != null">
+        BANDWIDTH,
+      </if>
+      CREATE_TIME,
+      UPDATE_TIME,
+      <if test="createUserId != null">
+        CREATE_USERID,
+      </if>
+      <if test="updateUserId != null">
+        UPDATE_USERID,
+      </if>
+      <if test="czlx!=null">
+        CZLX,
+      </if>
+      <if test="dealFlag!=null">
+        DEAL_FLAG,
+      </if>
+      <if test="clientId!=null">
+        CLIENTID,
+      </if>
+      <if test="infoComplete!=null">
+        INFO_COMPLETE,
+      </if>
+      <if test="areaCode!=null">
+        SUBORDINATEUNIT_AREACODE,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      #{hhId},
+      <if test="userId != null">
+        #{userId},
+      </if>
+      <if test="houseId != null">
+        #{houseId},
+      </if>
+      <if test="distributeTime != null">
+        #{distributeTime},
+      </if>
+      <if test="bandWidth != null">
+        #{bandWidth},
+      </if>
+      sysdate,
+      sysdate,
+      <if test="createUserId != null">
+        #{createUserId},
+      </if>
+      <if test="updateUserId != null">
+        #{updateUserId},
+      </if>
+      <if test="czlx!=null">
+        #{czlx},
+      </if>
+      <if test="dealFlag!=null">
+        #{dealFlag},
+      </if>
+      <if test="clientId!=null">
+        #{clientId},
+      </if>
+      <if test="infoComplete!=null">
+        #{infoComplete},
+      </if>
+      <if test="areaCode!=null">
+        #{areaCode},
+      </if>
+    </trim>
+  </insert>
+
+  <update id="update" parameterType="com.aotain.cu.serviceapi.model.UserBandwidthInformation">
+    update IDC_ISMS_BASE_USER_HH
+    <set>
+      <if test="userId!=null">
+        USERID = #{userId},
+      </if>
+      <if test="houseId!=null">
+        HOUSEID = #{houseId},
+      </if>
+      <if test="distributeTime!=null">
+        DISTRIBUTETIME = #{distributeTime},
+      </if>
+      <if test="bandWidth!=null">
+        BANDWIDTH = #{bandWidth},
+      </if>
+      <if test="areaCode!=null">
+        subordinateunit_areacode = #{areaCode},
+      </if>
+      <if test="czlx!=null">
+        CZLX = #{czlx},
+      </if>
+      <if test="dealFlag!=null">
+        deal_flag = #{dealFlag},
+      </if>
+      update_time=sysdate
+    </set>
+    where HHID=#{hhId}
+  </update>
+
+  <delete id="deleteByHHId" parameterType="Long" >
+    delete from IDC_ISMS_BASE_USER_HH where HHID = #{hhid}
+  </delete>
+
+  <select id="getUserBandWidthInfoById" parameterType="Long" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from idc_isms_base_user_hh a
+    where a.HHID = #{hhid}
+  </select>
+  
+  <select id="uniqueBandwidth" parameterType="com.aotain.cu.serviceapi.model.UserBandwidthInformation" resultMap="BaseResultMap">
+	select
+	<include refid="Base_Column_List" />
+	from idc_isms_base_user_hh a
+	where a.HOUSEID = #{houseId}  and a.czlx!=3
+	<if test="userId != null">
+		and a.USERID = #{userId}
+    </if>
+	<if test="unitName != null">
+        and a.USERID in (select USERID from idc_isms_base_user where UNITNAME = #{unitName})
+    </if>
+	<if test="hhId != null">
+        and a.HHID != #{hhId}
+    </if>
+  </select>
+  
+  <select id="getUserBindInfoByHouseIdAndUserId" parameterType="com.aotain.cu.serviceapi.dto.UserBandwidthInformationDTO" resultType="com.aotain.cu.serviceapi.dto.UserBandwidthInformationDTO">
+    select <include refid="Base_Column_List"></include>
+    from idc_isms_base_user_hh a
+     where a.userid=#{userId}
+     and a.houseid=#{houseId}
+  </select>
+
+  <select id="getUserBandWidthByUserId" parameterType="com.aotain.cu.serviceapi.dto.UserBandwidthInformationDTO" resultMap="BaseResultMap">
+    select
+    a.HHID,
+    a.USERID,
+    a.HOUSEID,
+    a.DISTRIBUTETIME,
+    a.BANDWIDTH,
+    a.CREATE_TIME,
+    a.UPDATE_TIME,
+    a.CREATE_USERID,
+    a.UPDATE_USERID,
+    a.CZLX,
+    a.DEAL_FLAG
+    from idc_isms_base_user_hh a
+    where 1=1
+    <if test="userId!=null">
+      and a.USERID = #{userId}
+    </if>
+    <if test="areaCode != null and areaCode != '' ">
+      AND split_areacode(a.SUBORDINATEUNIT_AREACODE, #{areaCode}) = 1
+    </if>
+  </select>
+
+</mapper>

@@ -1,0 +1,379 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.aotain.serviceapi.server.dao.preinput.UserVirtualMachineMapper">
+
+    <select id="findByVirtualNo"  resultType="com.aotain.cu.serviceapi.model.UserVirtualInformation">
+        select * from IDC_ISMS_BASE_SERVICE_VIRTUAL
+        WHERE VIRTUALHOST_NO = #{virtualNo}
+        <if test="virtualId != null">
+            AND VIRTUALID != #{virtualId}
+        </if>
+    </select>
+
+    <select id="findByName"  resultType="com.aotain.cu.serviceapi.model.UserVirtualInformation">
+        select * from IDC_ISMS_BASE_SERVICE_VIRTUAL
+        WHERE VIRTUALHOST_NAME = #{name}
+        <if test="virtualId != null">
+            AND VIRTUALID != #{virtualId}
+        </if>
+    </select>
+    
+    <select id="judgeRightExist" parameterType="com.aotain.cu.serviceapi.model.UserVirtualInformation" resultType="integer">
+    	select count(1) cnt
+		from idc_isms_base_user a
+		join idc_isms_base_user_service b on a.userid = b.userid
+		where b.setmode = 1
+		<if test="unitName != null">
+            and a.unitname = #{unitName}
+        </if>
+        <if test="userId != null">
+            and a.userid = #{userId}
+        </if>
+    </select>
+    	
+    <update id="updateVirtualInfoById" parameterType="com.aotain.cu.serviceapi.model.UserVirtualInformation">
+    	update idc_isms_base_service_virtual
+        <set>
+        	<if test="userId!=null">
+        		USERID = #{userId},
+        	</if>
+        	<if test="houseId!=null">
+        		HOUSEID = #{houseId},
+        	</if>
+        	<if test="name!=null">
+        		VIRTUALHOST_NAME = #{name},
+        	</if>
+        	<if test="status!=null">
+        		VIRTUALHOST_STATE = #{status},
+        	</if>
+        	<if test="type!=null">
+        		VIRTUALHOST_TYPE = #{type},
+        	</if>
+        	<if test="networkAddress!=null">
+        		NETWORK_ADDRESS = #{networkAddress},
+        	</if>
+        	<if test="mgnAddress!=null">
+        		MGN_ADDRESS = #{mgnAddress},
+        	</if>
+        	<if test="virtualNo!=null">
+        		VIRTUALHOST_NO = #{virtualNo},
+        	</if>
+        	<if test="czlx!=null">
+        		CZLX = #{czlx},
+        	</if>
+        	<if test="areaCode!=null">
+        		SUBORDINATEUNIT_AREACODE = #{areaCode},
+        	</if>
+        	deal_flag=0,
+        	UPDATE_TIME=sysdate
+        </set>
+        where VIRTUALID = #{virtualId}
+    </update>
+    
+    
+    <insert id="insertUserVirtual" parameterType="com.aotain.cu.serviceapi.model.UserVirtualInformation">
+        
+        <selectKey keyProperty="virtualId" resultType="java.lang.Long" order="BEFORE">
+            SELECT SEQ_ISMS_BASE_SERVICE_HOSTID.NEXTVAL as VIRTUALID FROM dual
+        </selectKey>
+        
+        insert into IDC_ISMS_BASE_SERVICE_VIRTUAL
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            VIRTUALID,
+            <if test="hhId != null">
+                HHID,
+            </if>
+            <if test="userId != null">
+                USERID,
+            </if>
+            <if test="houseId != null">
+                HOUSEID,
+            </if>
+            <if test="name != null">
+                VIRTUALHOST_NAME,
+            </if>
+            <if test="status != null">
+                VIRTUALHOST_STATE,
+            </if>
+            <if test="type != null">
+                VIRTUALHOST_TYPE ,
+            </if>
+            <if test="networkAddress != null">
+                NETWORK_ADDRESS,
+            </if>
+            <if test="mgnAddress != null">
+                MGN_ADDRESS,
+            </if>
+                CREATE_TIME,
+                UPDATE_TIME,
+            <if test="createUserId != null">
+                CREATE_USERID ,
+            </if>
+            <if test="updateUserId != null">
+                UPDATE_USERID ,
+            </if>
+            <if test="operateType!=null">
+                CZLX,
+            </if>
+            <if test="virtualNo!=null">
+                VIRTUALHOST_NO,
+            </if>
+            <if test="dealFlag!=null">
+                DEAL_FLAG,
+            </if>
+			<if test="areaCode!=null">
+				SUBORDINATEUNIT_AREACODE,
+			</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            #{virtualId},
+            <if test="hhId != null">
+                #{hhId},
+            </if>
+            <if test="userId != null">
+                #{userId},
+            </if>
+            <if test="houseId != null">
+                #{houseId},
+            </if>
+            <if test="name != null">
+                #{name},
+            </if>
+            <if test="status != null">
+                #{status},
+            </if>
+            <if test="type != null">
+                #{type} ,
+            </if>
+            <if test="networkAddress != null">
+                #{networkAddress},
+            </if>
+            <if test="mgnAddress != null">
+                #{mgnAddress},
+            </if>
+				sysdate,
+				sysdate,
+            <if test="createUserId != null">
+                #{createUserId} ,
+            </if>
+            <if test="updateUserId != null">
+                #{updateUserId} ,
+            </if>
+            <if test="operateType!=null">
+                #{operateType},
+            </if>
+            <if test="virtualNo!=null">
+                #{virtualNo},
+            </if>
+            <if test="dealFlag!=null">
+                #{dealFlag},
+            </if>
+			<if test="areaCode!=null">
+				#{areaCode},
+			</if>
+        </trim>
+    </insert>
+    
+    <select id="findByVirtualId"  resultType="com.aotain.cu.serviceapi.model.UserVirtualInformation">
+        select * from IDC_ISMS_BASE_SERVICE_VIRTUAL
+        WHERE VIRTUALID = #{virtualId}
+    </select>
+
+    <delete id="deleteByVirtulId" parameterType="long">
+    	delete from idc_isms_base_service_virtual t where t.virtualid = #{virtualId}
+    </delete>
+    <sql id="queryColumns">
+    	
+    </sql>
+    <!-- <include refid="queryColumns"/>  -->
+    <select id="getIndexUserVirtual" resultType="com.aotain.cu.serviceapi.dto.UserVirtualInformationDTO" parameterType="com.aotain.cu.serviceapi.dto.UserVirtualInformationDTO">
+    	select 
+		a.virtualid virtualId, 
+		a.czlx czlx,
+ 		a.virtualhost_name name,
+ 		a.update_time updateTime,
+ 		d.unitName unitName,
+ 		a.deal_flag dealFlag,
+ 		a.subordinateunit_areacode areaCode,
+ 		a.virtualhost_state status,
+ 		a.userId userId,
+ 		a.houseid houseId,
+ 		a.virtualhost_type type, 
+ 		a.network_address networkAddress,
+ 		a.mgn_address mgnAddress,
+ 		a.virtualhost_no virtualNo,
+ 		c.housename houseName,
+ 		b.VIRTUALID as rptVirtualId,
+		b.USERID as rptUserId,
+		b.HOUSEID as rptHouseId,
+		b.VIRTUALHOST_NAME as rptName,
+		b.VIRTUALHOST_STATE as rptStatus,
+		b.VIRTUALHOST_TYPE as rptType,
+		b.NETWORK_ADDRESS as rptNetworkAddress,
+		b.MGN_ADDRESS as rptMgnAddress,
+		b.SUBORDINATEUNIT_AREACODE as rptAreaCode
+    	from idc_isms_base_service_virtual a 
+    	left join idc_isms_base_house c on a.houseId = c.houseId 
+    	left join rpt_isms_base_user_virtual b on a.virtualid = b.virtualid,
+    	idc_isms_base_user d
+    	where   a.userid =d.userid
+        AND a.USERID in (
+            select userid from idc_isms_base_user
+            where nature = 1
+            <if test="authIdentities != null and authIdentities != '' ">
+                and split_areacode(IDENTIFY, #{authIdentities}) = 1
+            </if>
+            <if test="areaCodes != null and areaCodes != '' ">
+              and split_areacode(SUBORDINATEUNIT_AREACODE,#{areaCodes})=1
+            </if>
+        )
+
+	    <if test="userAuthHouseList != null and userAuthHouseList.size > 0">
+	         AND  a.HOUSEID in
+	         <foreach collection="userAuthHouseList" index="index" item="item" open="(" separator="," close=")">
+	         	#{item}
+			</foreach> 
+	    </if>
+
+	    <if test="areaCodes != null and areaCodes !='' ">
+	       	AND split_areacode(a.SUBORDINATEUNIT_AREACODE, #{areaCodes}) = 1
+	    </if>
+    	<if test="name!=null and name!=''">
+    		and a.virtualhost_name like '%'||#{name}||'%'
+    	</if>
+    	<if test="status!=null">
+    		and a.virtualhost_state=#{status}
+    	</if>
+    	<if test="czlx!=null">
+    		and a.czlx=#{czlx}
+    	</if>
+    	<if test="dealFlag!=null">
+    		and a.deal_flag=#{dealFlag}
+    	</if>
+    	<if test="houseId!=null">
+    		and a.houseId = #{houseId}
+    	</if>
+    	<if test="type!=null">
+    		and a.virtualhost_type=#{type}
+    	</if>
+    	<if test="networkAddress!=null and networkAddress!=''">
+    		and a.network_address like '%'||#{networkAddress}||'%'
+    	</if>
+    	<if test="mgnAddress!=null and mgnAddress!=''">
+    		and a.mgn_address like '%'||#{mgnAddress}||'%'
+    	</if>
+    	<if test="virtualNo!=null and virtualNo!=''">
+    		and a.virtualhost_no like '%'||#{virtualNo}||'%'
+    	</if>
+    	<if test="startDate!=null and startDate!=''">
+            AND  #{startDate} &lt;= to_char(a.UPDATE_TIME,'yyyy-mm-dd')
+        </if>
+        <if test="endDate!=null and endDate!=''">
+            AND  #{endDate} &gt;= to_char(a.UPDATE_TIME,'yyyy-mm-dd')
+        </if>
+        <if test="unitName!=null and unitName!=''">
+    		and a.userid =(select userid from idc_isms_base_user where unitname like '%'||#{unitName}||'%')
+    	</if>
+    	<if test="houseName!=null and houseName!=''">
+    		and a.houseid =(select houseid from idc_isms_base_house where housename like '%'||#{houseName}||'%')
+    	</if>
+        <if test="userId!=null">
+          and  a.USERID = #{userId}
+        </if>
+    	ORDER  BY a.CREATE_TIME DESC
+    	
+    </select>
+    
+    <delete id="deleteByUserId" parameterType="long">
+   		 delete from idc_isms_base_service_virtual where userid not in (
+         select userid from idc_isms_base_service_virtual where czlx=2
+         union
+         select userid from idc_isms_base_service_virtual where czlx=1 and deal_flag=1 
+  		)  and userid=#{userId}
+    </delete>
+    
+    <update id="UpdateDealFlagAndCzlxByUserId" parameterType="map">
+    	update idc_isms_base_service_virtual set czlx=#{czlx},deal_flag=#{dealFlag} where userid=#{userId} and userid in (
+         select userid from idc_isms_base_service_virtual where czlx=2
+         union
+         select userid from idc_isms_base_service_virtual where czlx=1 and deal_flag=1 
+  		 )
+    </update>
+    
+    <insert id="insertUserVirtualInfo" parameterType="com.aotain.cu.serviceapi.model.UserVirtualInformation">
+    insert into idc_isms_base_service_virtual
+    <selectKey keyProperty="virtualId" resultType="java.lang.Long" order="BEFORE">
+            SELECT SEQ_ISMS_BASE_SERVICE_HOSTID.NEXTVAL as VIRTUALID FROM dual
+        </selectKey>
+     (virtualid, userid, virtualhost_name, virtualhost_state, virtualhost_type, create_time, update_time, network_address, virtualhost_no, mgn_address, create_userid, deal_flag, czlx, del_flag,houseid,verification_result,SUBORDINATEUNIT_AREACODE)
+   values
+     (#{virtualId},  #{userId}, #{name}, #{status}, #{type}, sysdate, sysdate, #{networkAddress}, #{virtualNo}, #{mgnAddress}, #{createUserId}, '0', '1', '0',  #{houseId},#{verificationResult,jdbcType=VARCHAR},#{areaCode,jdbcType=VARCHAR})
+   
+    </insert>
+	
+	<delete id="deleteVirByUserIdByLogic" parameterType="long">
+		UPDATE idc_isms_base_service_virtual SET CZLX=3,DEAL_FLAG=0 where virtualid in (
+        select virtualid from idc_isms_base_service_virtual where USERID=#{userId} and deal_flag=1 and czlx=1
+        union 
+        select virtualid from idc_isms_base_service_virtual where USERID=#{userId} and czlx=2
+ 		)
+		
+	</delete>
+	
+	<select id="getVirtualByUserId" parameterType="long" resultType="com.aotain.cu.serviceapi.model.UserVirtualInformation">
+		select
+		a.virtualid virtualId,
+ 		a.virtualhost_name name,
+ 		a.update_time updateTime,
+ 		a.SUBORDINATEUNIT_AREACODE areaCode,
+ 		a.virtualhost_state status,
+ 		a.userId userId,
+ 		a.houseid houseId,
+ 		a.virtualhost_type type,
+ 		a.network_address networkAddress,
+ 		a.mgn_address mgnAddress,
+ 		a.virtualhost_no virtualNo
+    	from idc_isms_base_service_virtual a where a.USERID=#{userId}
+	</select>
+	
+	<delete id="deleteVirByUserIdWhichNotReport" parameterType="long">
+		delete from IDC_ISMS_BASE_SERVICE_VIRTUAL where czlx=1 and deal_flag=0 and USERID=#{userId}
+	</delete>
+
+    <select id="getIndexUserVirtualByUserId" resultType="com.aotain.cu.serviceapi.dto.UserVirtualInformationDTO" parameterType="com.aotain.cu.serviceapi.dto.UserVirtualInformationDTO">
+        select
+        a.virtualid virtualId,
+        a.czlx czlx,
+        a.virtualhost_name name,
+        a.update_time updateTime,
+        a.deal_flag dealFlag,
+        a.subordinateunit_areacode areaCode,
+        a.virtualhost_state status,
+        a.userId userId,
+        a.houseid houseId,
+        a.virtualhost_type type,
+        a.network_address networkAddress,
+        a.mgn_address mgnAddress,
+        a.virtualhost_no virtualNo
+        from idc_isms_base_service_virtual a
+        where 1=1
+        <if test="userId!=null">
+        and a.USERID = #{userId}
+       </if>
+        <if test="areaCode != null and areaCode !='' ">
+            AND split_areacode(a.SUBORDINATEUNIT_AREACODE, #{areaCode}) = 1
+        </if>
+    </select>
+
+
+    <update id="updateUserVirtualInfoByUserIdAndHouseId" >
+        update idc_isms_base_service_virtual set czlx=3,deal_flag=0
+        where userid=#{userId}
+            and deal_flag = 1
+        <if test="houseId!=null">
+            and houseid = #{houseId}
+        </if>
+    </update>
+
+</mapper>

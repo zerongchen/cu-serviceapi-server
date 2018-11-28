@@ -1,0 +1,221 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.aotain.serviceapi.server.dao.report.RptIsmsBaseHouseFrameMapper">
+
+
+	<select id="getDtoList" resultType="com.aotain.cu.serviceapi.dto.HouseFrameInformationDTO" parameterType="com.aotain.cu.serviceapi.dto.HouseFrameInformationDTO">
+		SELECT c.aa unitName,
+		e.FRAMEID as frameId,
+		e.HOUSEID as houseId,
+		e.FRAMENAME as frameName,
+		e.USETYPE as useType,
+		e.DISTRIBUTION as distribution,
+		e.OCCUPANCY as occupancy,
+		e.CREATE_TIME as createTime,
+		e.UPDATE_TIME as updateTime,
+		e.CREATE_USERID as createUserId,
+		e.UPDATE_USERID as updateUserId,
+		d.HOUSENAME as houseName
+		from RPT_ISMS_BASE_HOUSE_FRAME e left join RPT_ISMS_BASE_HOUSE d on e.houseid=d.houseid
+		left join (select wm_concat(t1.username) aa , t1.FRAMEID,t1.HOUSEID from RPT_ISMS_BASE_HOUSE_USERFRAME t1 group by  t1.FRAMEID,t1.HOUSEID) c
+		on e.frameid=c.frameid and e.houseid=c.houseid
+		WHERE 1=1
+		<if test="houseId != null">
+            AND e.HOUSEID = #{houseId}
+        </if>
+		<if test="userAuthHouseList != null and userAuthHouseList.size > 0">
+          AND  e.HOUSEID in
+          	<foreach collection="userAuthHouseList" index="index" item="item" open="(" separator="," close=")">
+          		#{item}
+			</foreach> 
+        </if>
+		<!-- AND e.HOUSEID in (
+			select HOUSEID FROM IDC_ISMS_BASE_HOUSE
+			where 1 = 1
+			<if test="authIdentities != null and authIdentities != '' ">
+				and split_areacode(IDENTIFY, #{authIdentities}) = 1
+			</if>
+			<if test="areaCodes != null and areaCodes != '' ">
+				and split_areacode(SUBORDINATEUNIT_AREACODE, #{areaCodes}) = 1
+			</if>
+			<if test="userAuthHouseList != null and userAuthHouseList.size > 0">
+				AND HOUSEID in
+				<foreach collection="userAuthHouseList" index="index" item="item" open="(" separator="," close=")">
+					#{item}
+				</foreach>
+			</if>
+		) -->
+        <if test="areaCodes != null and areaCodes != '' ">
+          AND split_areacode(e.SUBORDINATEUNIT_AREACODE, #{areaCodes}) = 1
+        </if>
+		<if test="houseIDs!=null and houseIDs!=''">
+			AND e.HOUSEID in (${houseIDs})
+		</if>
+		<if test="frameName!=null and frameName!=''">
+			AND e.FRAMENAME LIKE '%'||#{frameName}||'%'
+		</if>
+		<if test="unitName!=null and unitName!=''">
+			AND c.aa LIKE '%'||#{unitName}||'%'
+		</if>
+		<if test="distribution!=null">
+			AND e.DISTRIBUTION = #{distribution}
+		</if>
+		<if test="startDate!=null and startDate!=''">
+			AND  #{startDate} &lt;= to_char(e.UPDATE_TIME,'yyyy-mm-dd')
+		</if>
+		<if test="endDate!=null and endDate!=''">
+			AND  #{endDate} &gt;= to_char(e.UPDATE_TIME,'yyyy-mm-dd')
+		</if>
+		<if test="useType!=null ">
+			AND e.USETYPE =  #{useType}
+		</if>
+		<if test="occupancy!=null ">
+			AND e.OCCUPANCY =  #{occupancy}
+		</if>
+		<if test="houseName!=null ">
+			AND d.HOUSENAME  LIKE '%'||#{houseName}||'%'
+		</if>
+		ORDER  BY e.UPDATE_TIME DESC
+	</select>
+	<!-- 读一条记录 -->
+	<select id="getData" resultType="com.aotain.cu.serviceapi.model.HouseFrameInformation" parameterType="com.aotain.cu.serviceapi.model.HouseFrameInformation">
+		select * from  RPT_ISMS_BASE_HOUSE_FRAME
+		where FRAMEID = #{frameId}
+	</select>
+
+	<select id="getCount" resultType="java.lang.Integer" parameterType="com.aotain.cu.serviceapi.model.HouseFrameInformation">
+		select count(1) from  RPT_ISMS_BASE_HOUSE_FRAME
+		where FRAMEID = #{frameId}
+	</select>
+
+	<!-- 插入记录  -->
+	<insert id="insertData" parameterType="com.aotain.cu.serviceapi.model.HouseFrameInformation">
+		insert into RPT_ISMS_BASE_HOUSE_FRAME
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			FRAMEID,
+			<if test="houseId != null">
+				HOUSEID,
+			</if>
+			<if test="frameName != null">
+				FRAMENAME,
+			</if>
+			<if test="useType != null">
+				USETYPE,
+			</if>
+			<if test="distribution != null">
+				DISTRIBUTION,
+			</if>
+			<if test="occupancy != null">
+				OCCUPANCY,
+			</if>
+			<if test="createTime != null">
+				CREATE_TIME,
+			</if>
+			<if test="updateTime != null">
+				UPDATE_TIME,
+			</if>
+			<if test="createUserId != null">
+				CREATE_USERID,
+			</if>
+			<if test="updateUserId != null">
+				UPDATE_USERID,
+			</if>
+			<if test="areaCode != null">
+				SUBORDINATEUNIT_AREACODE,
+			</if>
+			<if test="frameNo != null">
+				FRAMENO,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			#{frameId},
+			<if test="houseId != null">
+			#{houseId},
+			</if>
+			<if test="frameName != null">
+			#{frameName},
+			</if>
+			<if test="useType != null">
+			#{useType},
+			</if>
+			<if test="distribution != null">
+			#{distribution},
+			</if>
+			<if test="occupancy != null">
+			#{occupancy},
+			</if>
+			<if test="createTime != null">
+				#{createTime},
+			</if>
+			<if test="updateTime != null">
+				#{updateTime},
+			</if>
+			<if test="createUserId != null">
+				#{createUserId},
+			</if>
+			<if test="updateUserId != null">
+				#{updateUserId},
+			</if>
+			<if test="areaCode != null">
+				#{areaCode},
+			</if>
+			<if test="frameNo != null">
+				#{frameNo},
+			</if>
+		</trim>
+	</insert>
+
+	<!-- 修改  -->
+	<update id="updateData" parameterType="com.aotain.cu.serviceapi.model.HouseFrameInformation">
+		update RPT_ISMS_BASE_HOUSE_FRAME 
+		<set>
+			<if test="houseId != null">
+				HOUSEID=#{houseId},
+			</if>
+			<if test="frameName != null">
+				FRAMENAME=#{frameName},
+			</if>
+			<if test="useType != null">
+				USETYPE=#{useType},
+			</if>
+			<if test="distribution != null">
+				DISTRIBUTION=#{distribution},
+			</if>
+			<if test="occupancy != null">
+				OCCUPANCY=#{occupancy},
+			</if>
+			<if test="createTime != null">
+				CREATE_TIME=#{createTime},
+			</if>
+			<if test="updateTime != null">
+				UPDATE_TIME=#{updateTime},
+			</if>
+			<if test="createUserId != null">
+				CREATE_USERID=#{createUserId},
+			</if>
+			<if test="updateUserId != null">
+				UPDATE_USERID=#{updateUserId},
+			</if>
+			<if test="areaCode != null">
+				SUBORDINATEUNIT_AREACODE=#{areaCode},
+			</if>
+			<if test="frameNo != null">
+				FRAMENO=#{frameNo}
+			</if>
+		</set>
+		where FRAMEID=#{frameId}
+	</update>
+
+	<!-- 删除 -->
+	<delete id="deleteData" parameterType="com.aotain.cu.serviceapi.model.HouseFrameInformation">
+		delete from RPT_ISMS_BASE_HOUSE_FRAME 
+		where FRAMEID=#{frameId}
+	</delete>
+
+	<delete id="deleteDataByFK" parameterType="java.lang.Integer">
+		delete from RPT_ISMS_BASE_HOUSE_FRAME
+		where HOUSEID=#{fk}
+	</delete>
+
+</mapper>

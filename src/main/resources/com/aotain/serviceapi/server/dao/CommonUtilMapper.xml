@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.aotain.serviceapi.server.dao.CommonUtilMapper">
+
+    <select id="getAreaCode" resultType="com.aotain.cu.serviceapi.model.IdcJcdmXzqydm" parameterType="Integer">
+      select CODE,MC,parentCode as parentCode,CODELEVEL AS codeLevel ,b.AREA_CODE as areaCode from IDC_JCDM_XZQYDM a join DIC_SUBORDINATIONAREA b on a.mc=b.area_name
+      where 1=1
+      <if test="code!=null and code!=0 ">
+          AND b.AREA_CODE=#{code}
+      </if>
+    </select>
+    
+    <select id="getDetailAreaDic" resultType="String">
+       select a.mc||b.mc||c.mc from IDC_JCDM_XZQYDM a left join IDC_JCDM_XZQYDM b on a.code=b.parentcode
+       left join  IDC_JCDM_XZQYDM c on b.code=c.parentcode where a.codelevel=1
+       UNION ALL
+       select a.mc||b.mc from IDC_JCDM_XZQYDM a left join IDC_JCDM_XZQYDM b on a.code=b.parentcode
+       WHERE a.CODELEVEL=1
+       UNION ALL
+       select a.mc from IDC_JCDM_XZQYDM a WHERE a.CODELEVEL=1
+    </select>
+    
+    <select id="getHouseMappingMap" resultType="java.util.HashMap">
+      select houseid, housename from idc_isms_base_house h where h.czlx != 3
+    </select>
+    
+    <select id="getIdentityMappingMap" resultType="java.util.HashMap">
+      select id,mc from idc_jcdm_zxbs
+    </select>
+    
+    <select id="getSubordinateMappingMap" resultType="java.util.HashMap">
+      select t.area_code,t.area_name from dic_subordinationarea t
+    </select>
+    
+    <select id="getReportFileInfo" resultType="com.aotain.cu.serviceapi.dto.ReportFile">
+    	select a.submit_id submitId,a.report_filename reportFileName,a.deal_flag dealFlag,b.server_ip serverIp,b.record_num1 recordNum,to_char(b.create_time,'yyyy-mm-dd mm:hh24:ss') createTime,b.timeout_flag timeOutFlag,a.file_result_info fileResultInfo
+    	from wait_isms_submit_reportfile a
+		left join idc_monitor_task_file b on a.report_filename=b.file_name
+		where submit_id =#{submitId}
+    </select>
+
+    <resultMap id="ResultModelDto" type="com.aotain.cu.serviceapi.dto.ApproveResultDto">
+        <result column="APPROVE_ID" jdbcType="DECIMAL" property="approveId" />
+        <result column="SUBMIT_ID" jdbcType="DECIMAL" property="submitId" />
+        <result column="TYPE" jdbcType="DECIMAL" property="type" />
+        <result column="DATA_ID" jdbcType="DECIMAL" property="dataId" />
+        <result column="DEAL_FLAG" jdbcType="DECIMAL" property="dealFlag" />
+        <result column="WARN_DATA" jdbcType="VARCHAR" property="warnData" />
+        <result column="DEAL_TIME" jdbcType="VARCHAR" property="dealTime" />
+        <result column="CREATE_TIME" jdbcType="TIMESTAMP" property="createTime" />
+        <result column="UPDATE_TIME" jdbcType="TIMESTAMP" property="updateTime" />
+        <result column="CREATE_USER" jdbcType="VARCHAR" property="createUser" />
+        <result column="total" jdbcType="DECIMAL" property="total" />
+        <result column="exccount" jdbcType="DECIMAL" property="excCount" />
+    </resultMap>
+
+    <select id="getApproveResult" parameterType="com.aotain.cu.serviceapi.dto.ApproveResultDto" resultMap="ResultModelDto">
+        select a.APPROVE_ID,
+        a.SUBMIT_ID,
+        a.TYPE,
+        a.DATA_ID,
+        a.DEAL_FLAG,
+        a.WARN_DATA,
+        a.DEAL_TIME,
+        a.CREATE_TIME,
+        a.UPDATE_TIME,
+        a.CREATE_USER,
+        b.total,
+        c.exccount
+        from WAIT_APPROVE_PROCESS a left join
+        ( select SUBMIT_ID,count(SUBMIT_ID) total  from wait_isms_submit_reportfile  group by SUBMIT_ID ) b on a.SUBMIT_ID = b.SUBMIT_ID
+        left join ( select SUBMIT_ID,count(SUBMIT_ID) exccount  from wait_isms_submit_reportfile where DEAL_FLAG = 1  group by SUBMIT_ID ) c on a.SUBMIT_ID = c.SUBMIT_ID
+        <if test="approveId!=null">
+            and APPROVE_ID=#{approveId}
+        </if>
+        ORDER BY CREATE_TIME DESC
+    </select>
+
+
+    <insert id="insertApproveProcess" parameterType="com.aotain.cu.serviceapi.model.WaitApproveProcess">
+        insert into WAIT_APPROVE_PROCESS
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            approve_id,
+            <if test="submitId != null">
+                submit_id,
+            </if>
+            type,
+            data_id,
+            deal_flag,
+            <if test="warnData != null">
+                warn_data,
+            </if>
+            deal_time,
+            create_time,
+            update_time,
+            <if test="createUser != null">
+                create_user,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            #{approveId},
+            <if test="submitId != null">
+                #{submitId},
+            </if>
+            #{type},#{dataId},#{dealFlag},
+            <if test="warnData != null">
+                #{warnData},
+            </if>
+            #{dealTime},#{createTime},#{updateTime},
+            <if test="createUser != null">
+                #{createUser},
+            </if>
+        </trim>
+    </insert>
+
+</mapper>

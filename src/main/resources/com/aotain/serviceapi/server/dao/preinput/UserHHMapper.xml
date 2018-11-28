@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+        <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.aotain.serviceapi.server.dao.preinput.UserHHMapper">
+
+
+    <update id="updateUserHHInfoByHHid" parameterType="com.aotain.cu.serviceapi.model.UserBandwidthInformation">
+        update IDC_ISMS_BASE_USER_HH
+			<set>
+				<if test="userId!=null">
+        		USERID = #{userId},
+        		</if>
+        		<if test="houseId!=null">
+        		HOUSEID = #{houseId},
+        		</if>
+        		<if test="distributeTime!=null">
+        		DISTRIBUTETIME = #{distributeTime},
+        		</if>
+        		<if test="bandWidth!=null">
+        		BANDWIDTH = #{bandWidth},
+        		</if>
+        		<if test="areaCode!=null">
+        		subordinateunit_areacode = #{areaCode},
+        		</if>
+        		<if test="czlx!=null">
+        		CZLX = #{czlx},
+        		</if>
+        		deal_flag=0,
+        		update_time=sysdate
+			</set>
+		where HHID=#{hhId}
+    </update>
+    
+    <select id="findUserHHInfoCount" parameterType="com.aotain.cu.serviceapi.model.UserBandwidthInformation">
+    	select count(1) from idc_isms_base_user_hh where userid = #{userId} and houseId = #{houseId}
+    	<if test="hhId!=null">
+        	and	HHID != #{hhId}
+        </if>
+    </select>
+    
+    <delete id="deleteByUserId" parameterType="long">
+    	 delete from idc_isms_base_user_hh where userid not in (
+         select userid from idc_isms_base_user_hh where czlx=2
+         union
+         select userid from idc_isms_base_user_hh where czlx=1 and deal_flag=1 
+  		)  and userid=#{userId}
+    </delete>
+    
+    <update id="UpdateDealFlagAndCzlxByUserId" parameterType="map">
+    	 update idc_isms_base_user_hh set czlx=#{czlx},deal_flag=#{dealFlag} where userid=#{userId} and userid in (
+         select userid from idc_isms_base_user_hh where czlx=2
+         union
+         select userid from idc_isms_base_user_hh where czlx=1 and deal_flag=1 
+  		 )
+    </update>
+    
+    <select id="findByHHid" parameterType="long" resultType="com.aotain.cu.serviceapi.model.UserBandwidthInformation">
+    	 select t.hhid hhId,t.userid userId,t.houseid houseId,t.bandwidth bandWidth,t.distributetime distributeTime,czlx czlx,t.deal_flag dealFlag from idc_isms_base_user_hh t where hhid=#{hhId}
+    </select>
+	
+	<update id="UpdateDAndCByUserId" parameterType="map">
+		update idc_isms_base_user_hh set czlx=#{czlx},deal_flag=#{dealFlag} where userid=#{userId}
+	</update>
+	
+	<select id="getHHByUserId" parameterType="long" resultType="com.aotain.cu.serviceapi.model.UserBandwidthInformation">
+		SELECT HHID AS hhId , USERID AS userId,HOUSEID AS houseId FROM IDC_ISMS_BASE_USER_HH WHERE USERID=#{userId}
+	</select>
+
+
+	<update id="updateUserHHInfoByUserIdAndHouseId" >
+		update idc_isms_base_user_hh set czlx=3,deal_flag=0
+		where 	userid=#{userId}
+				and deal_flag = 1
+			<if test="houseId!=null">
+				and houseid = #{houseId}
+			</if>
+	</update>
+
+
+</mapper>

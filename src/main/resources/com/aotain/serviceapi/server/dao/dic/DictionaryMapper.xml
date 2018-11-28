@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.aotain.serviceapi.server.dao.dic.DictionaryMapper">
+    
+    <select id="getProvinceArreaCode" parameterType="string" resultType="string">
+        SELECT CODE FROM IDC_JCDM_XZQYDM t WHERE CODELEVEL = 1 AND mc=#{mc}
+    </select>
+    
+    <select id="getCityArreaCode" parameterType="string" resultType="string">
+        SELECT CODE FROM IDC_JCDM_XZQYDM t WHERE CODELEVEL = 2 AND mc=#{mc} and PARENTCODE=#{provinceCode}
+    </select>
+    
+    <select id="getCountyArreaCode" parameterType="string" resultType="string">
+        SELECT CODE FROM IDC_JCDM_XZQYDM t WHERE CODELEVEL = 3 AND mc=#{mc} and PARENTCODE=#{cityCode}
+    </select>
+   
+    <select id="getHouseIdByHouseName" parameterType="string" resultType="long">
+        SELECT HOUSEID from IDC_ISMS_BASE_HOUSE where HOUSENAME=#{houseName}
+    </select>
+
+</mapper>

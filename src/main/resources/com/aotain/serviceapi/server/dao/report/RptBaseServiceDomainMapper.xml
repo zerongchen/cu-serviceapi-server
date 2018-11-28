@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.aotain.serviceapi.server.dao.report.RptBaseServiceDomainMapper">
+  <resultMap id="BaseResultMap" type="com.aotain.cu.serviceapi.model.ServiceDomainInformation">
+    <id column="DOMAINID" jdbcType="DECIMAL" property="domainId" />
+    <result column="SERVICEID" jdbcType="DECIMAL" property="serviceId" />
+    <result column="DOMAINNAME" jdbcType="VARCHAR" property="domainName" />
+    <result column="CREATE_TIME" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="UPDATE_TIME" jdbcType="TIMESTAMP" property="updateTime" />
+    <result column="CREATE_USERID" jdbcType="DECIMAL" property="createUserId" />
+    <result column="UPDATE_USERID" jdbcType="DECIMAL" property="updateUserId" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    DOMAINID, SERVICEID, DOMAINNAME, CREATE_TIME, UPDATE_TIME, CREATE_USERID, UPDATE_USERID
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from RPT_ISMS_BASE_SERVICE_DOMAIN
+    where DOMAINID = #{domainId,jdbcType=DECIMAL}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from RPT_ISMS_BASE_SERVICE_DOMAIN
+    where DOMAINID = #{domainId,jdbcType=DECIMAL}
+  </delete>
+  <insert id="insert" parameterType="com.aotain.cu.serviceapi.model.ServiceDomainInformation">
+    insert into RPT_ISMS_BASE_SERVICE_DOMAIN (DOMAINID, SERVICEID, DOMAINNAME, 
+      CREATE_TIME, UPDATE_TIME, CREATE_USERID, 
+      UPDATE_USERID)
+    values (#{domainId,jdbcType=DECIMAL}, #{serviceId,jdbcType=DECIMAL}, #{domainName,jdbcType=VARCHAR},
+      #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}, #{createUserId,jdbcType=DECIMAL},
+      #{updateUserId,jdbcType=DECIMAL})
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.aotain.cu.serviceapi.model.ServiceDomainInformation">
+    update RPT_ISMS_BASE_SERVICE_DOMAIN
+    <set>
+      <if test="serviceId != null">
+        SERVICEID = #{serviceId,jdbcType=DECIMAL},
+      </if>
+      <if test="domainName != null">
+        DOMAINNAME = #{domainName,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null">
+        CREATE_TIME = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        UPDATE_TIME = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createUserId != null">
+        CREATE_USERID = #{createUserId,jdbcType=DECIMAL},
+      </if>
+      <if test="updateUserId != null">
+        UPDATE_USERID = #{updateUserId,jdbcType=DECIMAL},
+      </if>
+    </set>
+    where DOMAINID = #{domainId,jdbcType=DECIMAL}
+  </update>
+  <insert id="insertList" parameterType="java.util.List" useGeneratedKeys="false">
+    insert into RPT_ISMS_BASE_SERVICE_DOMAIN (DOMAINID, SERVICEID, DOMAINNAME,
+    CREATE_TIME, UPDATE_TIME, CREATE_USERID,
+    UPDATE_USERID)
+    (
+    <foreach collection="list" item="item" index="index" separator="union all">
+      select #{item.domainId,jdbcType=DECIMAL}, #{item.serviceId,jdbcType=DECIMAL}, #{item.domainName,jdbcType=VARCHAR},
+        #{item.createTime,jdbcType=TIMESTAMP}, #{item.updateTime,jdbcType=TIMESTAMP}, #{item.createUserId,jdbcType=DECIMAL},
+        #{item.updateUserId,jdbcType=DECIMAL}
+      from dual
+    </foreach>
+    )
+  </insert>
+  <select id="selectCountById" parameterType="com.aotain.cu.serviceapi.model.ServiceDomainInformation" resultType="java.lang.Integer">
+    select count(1)  from RPT_ISMS_BASE_SERVICE_DOMAIN
+    where DOMAINID = #{domainId,jdbcType=DECIMAL}
+  </select>
+
+  <delete id="deleteByIds" parameterType="java.util.HashMap">
+    delete from RPT_ISMS_BASE_SERVICE_DOMAIN
+    where 1=1 
+    <if test="domainIds != null and domainIds.size > 0">
+	    AND DOMAINID in ( 
+	    <foreach collection="domainIds" item="item" separator=",">
+	      #{item}
+	    </foreach>
+	     )
+    </if>
+    AND SERVICEID = #{serviceId}
+  </delete>
+
+  <update id="updateOrAdd" parameterType="java.util.List">
+    MERGE INTO RPT_ISMS_BASE_SERVICE_DOMAIN t1 USING (
+    <foreach collection="list" item="item" index="index" separator="union" >
+      select
+      #{item.domainId,jdbcType=DECIMAL} domainId,
+      #{item.serviceId,jdbcType=DECIMAL} serviceId,
+      #{item.domainName,jdbcType=VARCHAR} domainName,
+      #{item.createTime,jdbcType=TIMESTAMP} createTime,
+      #{item.updateTime,jdbcType=TIMESTAMP} updateTime,
+      #{item.createUserId,jdbcType=DECIMAL} createUserId,
+      #{item.updateUserId,jdbcType=DECIMAL} updateUserId
+      from dual
+    </foreach>
+    ) t2 ON ( t1.DOMAINID = t2.domainId )
+    WHEN MATCHED  THEN
+    UPDATE
+    <set>
+      t1.SERVICEID = t2.serviceId,
+      t1.DOMAINNAME = t2.domainName,
+      t1.CREATE_TIME = t2.createTime,
+      t1.UPDATE_TIME = t2.updateTime,
+      t1.CREATE_USERID = t2.createUserId,
+      t1.UPDATE_USERID = t2.updateUserId
+    </set>
+    WHEN NOT MATCHED THEN
+    INSERT ( DOMAINID, SERVICEID, DOMAINNAME,
+    CREATE_TIME, UPDATE_TIME, CREATE_USERID,
+    UPDATE_USERID )
+    values ( t2.domainId, t2.serviceId, t2.domainName, t2.createTime,
+     t2.updateTime, t2.createUserId, t2.updateUserId )
+  </update>
+
+    <delete id="deleteByIdList" parameterType="java.util.List">
+    DELETE FROM RPT_ISMS_BASE_SERVICE_DOMAIN
+    WHERE DOMAINID in (
+        <foreach collection="list" item="item" separator=",">
+            #{item.domainId}
+        </foreach>
+        )
+    </delete>
+
+</mapper>

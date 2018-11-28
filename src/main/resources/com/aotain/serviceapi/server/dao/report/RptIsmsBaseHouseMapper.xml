@@ -1,0 +1,346 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.aotain.serviceapi.server.dao.report.RptIsmsBaseHouseMapper">
+
+	<sql id="detailClums">
+        a.JYZID as jyzId,
+        a.HOUSEID as houseId,
+        a.HOUSEIDSTR as houseIdStr,
+        a.HOUSENAME as houseName,
+        a.HOUSETYPE as houseType,
+        a.HOUSEPROVINCE as houseProvince,
+        a.HOUSECITY as houseCity,
+        a.HOUSECOUNTY as houseCounty,
+        a.HOUSEADD as houseAddress,
+        a.HOUSEZIP as houseZipCode,
+        a.HO_NAME as houseOfficerName,
+        a.HO_IDTYPE as houseOfficerIdType,
+        a.HO_ID as houseOfficerId,
+        a.HO_TEL as houseOfficerTelephone,
+        a.HO_MOBILE as houseOfficerMobile,
+        a.HO_EMAIL as houseOfficerEmail,
+        a.CREATE_TIME as createTime,
+        a.UPDATE_TIME as updateTime,
+        a.CREATE_USERID as createUserId,
+        a.UPDATE_USERID as updateUserId,
+        a.IDENTIFY AS identity,
+        b.MC as provinceName,
+        c.MC as cityName,
+        d.MC as countyName
+    </sql>
+	<select id="getDtoList"  resultType="com.aotain.cu.serviceapi.dto.HouseInformationDTO" parameterType="com.aotain.cu.serviceapi.dto.HouseInformationDTO">
+		select <include refid="detailClums"/>
+		from (( RPT_ISMS_BASE_HOUSE a left join IDC_JCDM_XZQYDM b on a.HOUSEPROVINCE = b.CODE and b.CODELEVEL=1 )
+		left join IDC_JCDM_XZQYDM c on a.HOUSECITY = c.CODE and c.CODELEVEL=2 )
+		left join IDC_JCDM_XZQYDM d on a.HOUSECOUNTY = d.CODE and d.CODELEVEL=3
+		WHERE 1=1
+		<if test="houseId != null">
+            AND a.HOUSEID = #{houseId}
+        </if>
+		<if test="userAuthHouseList != null and userAuthHouseList.size > 0">
+          AND  a.HOUSEID in
+          	<foreach collection="userAuthHouseList" index="index" item="item" open="(" separator="," close=")">
+          		#{item}
+			</foreach> 
+        </if>
+        <if test="userAuthIdentityList != null and userAuthIdentityList.size > 0">
+          AND  a.IDENTIFY in
+          	<foreach collection="userAuthIdentityList" index="index" item="item" open="(" separator="," close=")">
+          		#{item}
+			</foreach> 
+        </if>
+       <!--  <if test="areaCodes != null and areaCodes != '' ">
+          AND split_areacode(a.SUBORDINATEUNIT_AREACODE, #{areaCodes}) = 1
+        </if> -->
+		<if test="houseName!=null and houseName!=''">
+			AND  a.HOUSENAME LIKE '%'||#{houseName}||'%'
+		</if>
+		<if test="houseIdStr!=null and houseIdStr!=''">
+			AND  a.HOUSEIDSTR LIKE '%'||#{houseIdStr}||'%'
+		</if>
+		<if test="houseOfficerName!=null and houseOfficerName!=''">
+			AND a.HO_NAME LIKE '%'||#{houseOfficerName}||'%'
+		</if>
+		<if test="houseProvince!=null">
+			AND a.HOUSEPROVINCE = #{houseProvince}
+		</if>
+		<if test="houseCity!=null">
+			AND a.HOUSECITY = #{houseCity}
+		</if>
+		<if test="houseCounty!=null">
+			AND a.HOUSECOUNTY = #{houseCounty}
+		</if>
+		<if test="houseType!=null">
+			AND a.HOUSETYPE = #{houseType}
+		</if>
+		<if test="identity!=null">
+			AND a.IDENTIFY = #{identity}
+		</if>
+		<if test="startDate!=null and startDate!=''">
+			AND  #{startDate} &lt;= to_char(a.UPDATE_TIME,'yyyy-mm-dd')
+		</if>
+		<if test="endDate!=null and endDate!=''">
+			AND  #{endDate} &gt;= to_char(a.UPDATE_TIME,'yyyy-mm-dd')
+		</if>
+		ORDER  BY a.UPDATE_TIME DESC
+	</select>
+
+	<select id="getHouseInfoById" resultType="com.aotain.cu.serviceapi.dto.HouseInformationDTO" parameterType="com.aotain.cu.serviceapi.dto.HouseInformationDTO">
+		select <include refid="detailClums"/>
+		from RPT_ISMS_BASE_HOUSE a
+		left join IDC_JCDM_XZQYDM b on a.HOUSEPROVINCE = b.CODE and b.CODELEVEL=1
+		left join IDC_JCDM_XZQYDM c on a.HOUSECITY = c.CODE and c.CODELEVEL=2
+		left join IDC_JCDM_XZQYDM d on a.HOUSECOUNTY = d.CODE and d.CODELEVEL=3
+		WHERE a.HOUSEID = #{houseId}
+	</select>
+
+	<!-- 读一条记录 -->
+	<select id="getData" resultType="com.aotain.cu.serviceapi.model.HouseInformation" parameterType="com.aotain.cu.serviceapi.model.HouseInformation">
+		select * from  RPT_ISMS_BASE_HOUSE
+		where HOUSEID = #{houseId}
+	</select>
+
+	<select id="getCount" resultType="java.lang.Integer" parameterType="com.aotain.cu.serviceapi.model.HouseInformation">
+		select count(1) from  RPT_ISMS_BASE_HOUSE
+		where HOUSEID = #{houseId}
+	</select>
+
+	<!-- 插入记录  -->
+	<insert id="insertData" parameterType="com.aotain.cu.serviceapi.model.HouseInformation">
+		insert into RPT_ISMS_BASE_HOUSE
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			HOUSEID,
+			<if test="jyzId != null">
+				JYZID,
+			</if>
+			<if test="houseIdStr != null">
+				HOUSEIDSTR,
+			</if>
+			<if test="houseName != null">
+				HOUSENAME,
+			</if>
+			<if test="houseType != null">
+				HOUSETYPE,
+			</if>
+			<if test="houseProvince != null">
+				HOUSEPROVINCE,
+			</if>
+			<if test="houseCity != null">
+				HOUSECITY,
+			</if>
+			<if test="houseCounty != null">
+				HOUSECOUNTY,
+			</if>
+			<if test="houseAddress != null">
+				HOUSEADD,
+			</if>
+			<if test="houseZipCode != null">
+				HOUSEZIP,
+			</if>
+			<if test="houseOfficerName != null">
+				HO_NAME,
+			</if>
+			<if test="houseOfficerIdType != null">
+				HO_IDTYPE,
+			</if>
+			<if test="houseOfficerId != null">
+				HO_ID,
+			</if>
+			<if test="houseOfficerTelephone != null">
+				HO_TEL,
+			</if>
+			<if test="houseOfficerMobile != null">
+				HO_MOBILE,
+			</if>
+			<if test="houseOfficerEmail != null">
+				HO_EMAIL,
+			</if>
+			<if test="identity != null">
+				IDENTIFY,
+			</if>
+			<if test="createTime != null">
+				CREATE_TIME,
+			</if>
+			<if test="updateTime != null">
+				UPDATE_TIME,
+			</if>
+			<if test="createUserId != null">
+				CREATE_USERID,
+			</if>
+			<if test="updateUserId != null">
+				UPDATE_USERID,
+			</if>
+			<if test="areaCode != null">
+				SUBORDINATEUNIT_AREACODE,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			#{houseId},
+			<if test="jyzId != null">
+				#{jyzId},
+			</if>
+			<if test="houseIdStr != null">
+				#{houseIdStr},
+			</if>
+			<if test="houseName != null">
+				#{houseName},
+			</if>
+			<if test="houseType != null">
+				#{houseType},
+			</if>
+			<if test="houseProvince != null">
+				#{houseProvince},
+			</if>
+			<if test="houseCity != null">
+				#{houseCity},
+			</if>
+			<if test="houseCounty != null">
+				#{houseCounty},
+			</if>
+			<if test="houseAddress != null">
+				#{houseAddress},
+			</if>
+			<if test="houseZipCode != null">
+				#{houseZipCode},
+			</if>
+			<if test="houseOfficerName != null">
+				#{houseOfficerName},
+			</if>
+			<if test="houseOfficerIdType != null">
+				#{houseOfficerIdType},
+			</if>
+			<if test="houseOfficerId != null">
+				#{houseOfficerId},
+			</if>
+			<if test="houseOfficerTelephone != null">
+				#{houseOfficerTelephone},
+			</if>
+			<if test="houseOfficerMobile != null">
+				#{houseOfficerMobile},
+			</if>
+			<if test="houseOfficerEmail != null">
+				#{houseOfficerEmail},
+			</if>
+			<if test="identity != null">
+				#{identity},
+			</if>
+			<if test="createTime != null">
+				#{createTime},
+			</if>
+			<if test="updateTime != null">
+				#{updateTime},
+			</if>
+			<if test="createUserId != null">
+				#{createUserId},
+			</if>
+			<if test="updateUserId != null">
+				#{updateUserId},
+			</if>
+			<if test="areaCode != null">
+				#{areaCode},
+			</if>
+		</trim>
+	</insert>
+
+	<!-- 修改  -->
+	<update id="updateData" parameterType="com.aotain.cu.serviceapi.model.HouseInformation">
+		update RPT_ISMS_BASE_HOUSE 
+		<set>
+			<if test="jyzId != null">
+				JYZID=#{jyzId},
+			</if>
+			<if test="houseIdStr != null">
+				HOUSEIDSTR=#{houseIdStr},
+			</if>
+			<if test="houseName != null">
+				HOUSENAME=#{houseName},
+			</if>
+			<if test="houseType != null">
+				HOUSETYPE=#{houseType},
+			</if>
+			<if test="houseProvince != null">
+				HOUSEPROVINCE=#{houseProvince},
+			</if>
+			<if test="houseCity != null">
+				HOUSECITY=#{houseCity},
+			</if>
+			<if test="houseCounty != null">
+				HOUSECOUNTY=#{houseCounty},
+			</if>
+			<if test="houseAddress != null">
+				HOUSEADD=#{houseAddress},
+			</if>
+			<if test="houseZipCode != null">
+				HOUSEZIP=#{houseZipCode},
+			</if>
+			<if test="houseOfficerName != null">
+				HO_NAME=#{houseOfficerName},
+			</if>
+			<if test="houseOfficerIdType != null">
+				HO_IDTYPE=#{houseOfficerIdType},
+			</if>
+			<if test="houseOfficerId != null">
+				HO_ID=#{houseOfficerId},
+			</if>
+			<if test="houseOfficerTelephone != null">
+				HO_TEL=#{houseOfficerTelephone},
+			</if>
+			<if test="houseOfficerMobile != null">
+				HO_MOBILE=#{houseOfficerMobile},
+			</if>
+			<if test="houseOfficerEmail != null">
+				HO_EMAIL=#{houseOfficerEmail},
+			</if>
+			<if test="identity != null">
+				IDENTIFY=#{identity},
+			</if>
+			<if test="createTime != null">
+				CREATE_TIME=#{createTime},
+			</if>
+			<if test="updateTime != null">
+				UPDATE_TIME=#{updateTime},
+			</if>
+			<if test="createUserId != null">
+				CREATE_USERID=#{createUserId},
+			</if>
+			<if test="updateUserId != null">
+				UPDATE_USERID=#{updateUserId},
+			</if>
+			<if test="areaCode != null">
+				SUBORDINATEUNIT_AREACODE=#{areaCode},
+			</if>
+		</set>
+		where HOUSEID=#{houseId}
+	</update>
+
+	<!-- 删除 -->
+	<delete id="deleteData" parameterType="com.aotain.cu.serviceapi.model.HouseInformation">
+		delete from RPT_ISMS_BASE_HOUSE 
+		where HOUSEID=#{houseId}
+	</delete>
+
+	
+	<select id="findByHouseId"  resultType="com.aotain.cu.serviceapi.model.HouseInformation">
+        select * from IDC_ISMS_BASE_HOUSE
+        WHERE HOUSEID = #{houseId}
+    </select>
+
+    <select id="findByHouseName"  resultType="com.aotain.cu.serviceapi.model.HouseInformation">
+        select * from IDC_ISMS_BASE_HOUSE
+        WHERE HOUSENAME = #{houseName}
+    </select>
+
+    <select id="findByHouseIdStr"  resultType="com.aotain.cu.serviceapi.model.HouseInformation">
+        select * from IDC_ISMS_BASE_HOUSE
+        WHERE HOUSEIDSTR = #{houseIdStr}
+    </select>
+	
+	<select id="selectByJyzId" parameterType="java.lang.Integer" resultType="java.lang.Integer">
+		select
+		HOUSEID
+		from RPT_ISMS_BASE_HOUSE
+		where JYZID = #{jyzId}
+	</select>
+	
+</mapper>

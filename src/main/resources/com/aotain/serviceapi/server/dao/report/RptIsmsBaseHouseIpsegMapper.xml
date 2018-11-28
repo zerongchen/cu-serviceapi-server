@@ -1,0 +1,286 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.aotain.serviceapi.server.dao.report.RptIsmsBaseHouseIpsegMapper">
+
+	<resultMap id="baseMapDto" type="com.aotain.cu.serviceapi.dto.HouseIPSegmentInforDTO">
+		<result column="IPSEGID" jdbcType="DECIMAL" property="ipSegId" />
+		<result column="HOUSEID" jdbcType="DECIMAL" property="houseId" />
+		<result column="STARTIP" jdbcType="VARCHAR" property="startIP" />
+		<result column="ENDIP" jdbcType="VARCHAR" property="endIP" />
+		<result column="IPTYPE" jdbcType="DECIMAL" property="ipType" />
+		<result column="USERNAME" jdbcType="VARCHAR" property="userName" />
+		<result column="IDTYPE" jdbcType="DECIMAL" property="idType" />
+		<result column="IDNUMBER" jdbcType="DECIMAL" property="idNumber" />
+		<result column="SOURCEUNIT" jdbcType="VARCHAR" property="sourceUnit" />
+		<result column="ALLOCATIONUNIT" jdbcType="VARCHAR" property="allocationUnit" />
+		<result column="CREATE_TIME" jdbcType="TIMESTAMP" property="createTime" />
+		<result column="UPDATE_TIME" jdbcType="TIMESTAMP" property="updateTime" />
+		<result column="CREATE_USERID" jdbcType="DECIMAL" property="createUserId" />
+		<result column="STARTIPSTR" jdbcType="VARCHAR" property="startIPStr" />
+		<result column="ENDIPSTR" jdbcType="VARCHAR" property="endIPStr" />
+		<result column="UPDATE_USERID" jdbcType="DECIMAL" property="updateUserId" />
+		<result column="dealFlagHouse" jdbcType="DECIMAL" property="dealFlagHouse" />
+		<result column="houseName" jdbcType="VARCHAR" property="houseName" />
+	</resultMap>
+
+	<select id="getDtoList" parameterType="com.aotain.cu.serviceapi.dto.HouseIPSegmentInforDTO"  resultMap="baseMapDto">
+		SELECT b.HOUSENAME,a.*
+		FROM RPT_ISMS_BASE_HOUSE_IPSEG a left join RPT_ISMS_BASE_HOUSE b on a.houseid=b.houseid
+		WHERE 1=1
+		<if test="houseId != null">
+            AND a.HOUSEID = #{houseId}
+        </if>
+		<if test="userAuthHouseList != null and userAuthHouseList.size > 0">
+          AND  a.HOUSEID in
+          	<foreach collection="userAuthHouseList" index="index" item="item" open="(" separator="," close=")">
+          		#{item}
+			</foreach> 
+        </if>
+		<!-- AND a.HOUSEID in (
+			select HOUSEID FROM IDC_ISMS_BASE_HOUSE
+			where 1 = 1
+			<if test="authIdentities != null and authIdentities != '' ">
+				and split_areacode(IDENTIFY, #{authIdentities}) = 1
+			</if>
+			<if test="areaCodes != null and areaCodes != '' ">
+				and split_areacode(SUBORDINATEUNIT_AREACODE, #{areaCodes}) = 1
+			</if>
+			<if test="userAuthHouseList != null and userAuthHouseList.size > 0">
+				AND HOUSEID in
+				<foreach collection="userAuthHouseList" index="index" item="item" open="(" separator="," close=")">
+					#{item}
+				</foreach>
+			</if>
+		) -->
+        <if test="areaCodes != null and areaCodes != '' ">
+          AND split_areacode(a.SUBORDINATEUNIT_AREACODE, #{areaCodes}) = 1
+        </if>
+		<if test="startIP!=null and startIP!=''">
+			AND ( a.STARTIP LIKE '%'||#{startIP}||'%'
+			OR  a.ENDIP LIKE '%'||#{startIP}||'%'
+			<if test="startIPStr!=null and startIPStr!=''">
+				OR( #{startIPStr} &gt;= a.startipstr
+				AND #{startIPStr} &lt;= a.endipstr )
+			</if>
+			)
+		</if>
+		<if test="userName!=null and userName!=''">
+			AND a.USERNAME LIKE '%'||#{userName}||'%'
+		</if>
+		<if test="houseIDs!=null and houseIDs!=''">
+			AND a.HOUSEID in (${houseIDs})
+		</if>
+		<if test="startDate!=null and startDate!=''">
+			AND  #{startDate} &lt;= to_char(a.UPDATE_TIME,'yyyy-mm-dd')
+		</if>
+		<if test="endDate!=null and endDate!=''">
+			AND  #{endDate} &gt;= to_char(a.UPDATE_TIME,'yyyy-mm-dd')
+		</if>
+		<if test="ipType!=null">
+			and  a.IPTYPE = #{ipType}
+		</if>
+		<if test="houseName!=null ">
+			AND b.HOUSENAME  LIKE '%'||#{houseName}||'%'
+		</if>
+		<!-- 用户详情查询IP信息条件 -->
+		<if test="unitName!=null and unitName!=''">
+			AND a.USERNAME = #{unitName}
+		</if>
+		<if test="idType!=null">
+			AND (a.idtype = #{idType} or a.idtype is null )
+		</if>
+		<if test="idNumber!=null">
+			AND (a.idnumber = #{idNumber} or a.idnumber is null )
+		</if>
+		ORDER  BY a.UPDATE_TIME DESC
+	</select>
+
+	<!-- 读一条记录 -->
+	<select id="getData" resultType="com.aotain.cu.serviceapi.model.HouseIPSegmentInformation" parameterType="com.aotain.cu.serviceapi.model.HouseIPSegmentInformation">
+		select * from  RPT_ISMS_BASE_HOUSE_IPSEG
+		where IPSEGID = #{ipSegId}
+	</select>
+
+	<select id="getCount" resultType="java.lang.Integer" parameterType="com.aotain.cu.serviceapi.model.HouseIPSegmentInformation">
+		select count(1) from  RPT_ISMS_BASE_HOUSE_IPSEG
+		where IPSEGID = #{ipSegId}
+	</select>
+
+	<!-- 插入记录  -->
+	<insert id="insertData"  parameterType="com.aotain.cu.serviceapi.model.HouseIPSegmentInformation">
+		insert into RPT_ISMS_BASE_HOUSE_IPSEG
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			IPSEGID,
+			<if test="houseId != null">
+				HOUSEID,
+			</if>
+			<if test="startIP != null">
+				STARTIP,
+			</if>
+			<if test="endIP != null">
+				ENDIP,
+			</if>
+			<if test="startIPStr != null">
+				STARTIPSTR,
+			</if>
+			<if test="endIPStr != null">
+				ENDIPSTR,
+			</if>
+			<if test="ipType != null">
+				IPTYPE,
+			</if>
+			<if test="userName != null">
+				USERNAME,
+			</if>
+			<if test="idType != null">
+				IDTYPE,
+			</if>
+			<if test="idNumber != null">
+				IDNUMBER,
+			</if>
+			<if test="useTime != null">
+				USETIME,
+			</if>
+			<if test="sourceUnit != null">
+				SOURCEUNIT,
+			</if>
+			<if test="allocationUnit != null">
+				ALLOCATIONUNIT,
+			</if>
+			<if test="createTime != null">
+				CREATE_TIME,
+			</if>
+			<if test="updateTime != null">
+				UPDATE_TIME,
+			</if>
+			<if test="createUserId != null">
+				CREATE_USERID,
+			</if>
+			<if test="updateUserId != null">
+				UPDATE_USERID,
+			</if>
+			<if test="areaCode != null">
+				SUBORDINATEUNIT_AREACODE,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			#{ipSegId},
+			<if test="houseId != null">
+			#{houseId},
+			</if>
+			<if test="startIP != null">
+			#{startIP},
+			</if>
+			<if test="endIP != null">
+			#{endIP},
+			</if>
+			<if test="startIPStr != null">
+			#{startIPStr},
+			</if>
+			<if test="endIPStr != null">
+			#{endIPStr},
+			</if>
+			<if test="ipType != null">
+			#{ipType},
+			</if>
+			<if test="userName != null">
+			#{userName},
+			</if>
+			<if test="idType != null">
+			#{idType},
+			</if>
+			<if test="idNumber != null">
+			#{idNumber},
+			</if>
+			<if test="useTime != null">
+			#{useTime},
+			</if>
+			<if test="sourceUnit != null">
+			#{sourceUnit},
+			</if>
+			<if test="allocationUnit != null">
+			#{allocationUnit},
+			</if>
+			<if test="createTime != null">
+				#{createTime},
+			</if>
+			<if test="updateTime != null">
+				#{updateTime},
+			</if>
+			<if test="createUserId != null">
+				#{createUserId},
+			</if>
+			<if test="updateUserId != null">
+				#{updateUserId},
+			</if>
+			<if test="areaCode != null">
+				#{areaCode},
+			</if>
+		</trim>
+	</insert>
+
+	<!-- 修改  -->
+	<update id="updateData" parameterType="com.aotain.cu.serviceapi.model.HouseIPSegmentInformation">
+		update RPT_ISMS_BASE_HOUSE_IPSEG 
+		<set>
+			<if test="houseId != null">
+				HOUSEID=#{houseId},
+			</if>
+			<if test="startIP != null">
+				STARTIP=#{startIP},
+			</if>
+			<if test="endIP != null">
+				ENDIP=#{endIP},
+			</if>
+			<if test="startIPStr != null">
+				STARTIPSTR=#{startIPStr},
+			</if>
+			<if test="endIPStr != null">
+				ENDIPSTR=#{endIPStr},
+			</if>
+			<if test="ipType != null">
+				IPTYPE=#{ipType},
+			</if>
+			<if test="useTime != null">
+				USETIME=#{useTime},
+			</if>
+			<if test="sourceUnit != null">
+				SOURCEUNIT=#{sourceUnit},
+			</if>
+			<if test="allocationUnit != null">
+				ALLOCATIONUNIT=#{allocationUnit},
+			</if>
+			<if test="createTime != null">
+				CREATE_TIME=#{createTime},
+			</if>
+			<if test="updateTime != null">
+				UPDATE_TIME=#{updateTime},
+			</if>
+			<if test="createUserId != null">
+				CREATE_USERID=#{createUserId},
+			</if>
+			<if test="updateUserId != null">
+				UPDATE_USERID=#{updateUserId},
+			</if>
+			<if test="areaCode != null">
+				SUBORDINATEUNIT_AREACODE=#{areaCode},
+			</if>
+			USERNAME=#{userName,jdbcType=VARCHAR},
+			IDTYPE=#{idType,jdbcType=NUMERIC},
+			IDNUMBER=#{idNumber,jdbcType=VARCHAR},
+		</set>
+		where IPSEGID=#{ipSegId}
+	</update>
+
+	<!-- 删除 -->
+	<delete id="deleteData" parameterType="com.aotain.cu.serviceapi.model.HouseIPSegmentInformation">
+		delete from RPT_ISMS_BASE_HOUSE_IPSEG 
+		where IPSEGID=#{ipSegId}
+	</delete>
+
+	<delete id="deleteDataByFK" parameterType="java.lang.Integer">
+		delete from RPT_ISMS_BASE_HOUSE_IPSEG
+		where HOUSEID=#{fk}
+	</delete>
+</mapper>

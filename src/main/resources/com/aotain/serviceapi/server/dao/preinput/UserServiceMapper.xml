@@ -1,0 +1,529 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.aotain.serviceapi.server.dao.preinput.UserServiceMapper">
+
+    <select id="findByDomainName"  resultType="com.aotain.cu.serviceapi.model.ServiceDomainInformation"
+        parameterType="com.aotain.cu.serviceapi.model.ServiceDomainInformation">
+        select * from IDC_ISMS_BASE_SERVICE_DOMAIN
+        WHERE DOMAINNAME = #{domainName}
+        <if test="serviceId!=null">
+            AND SERVICEID != #{serviceId}
+        </if>
+    </select>
+
+    <select id="findByRegisterIdAndUserId"  resultType="com.aotain.cu.serviceapi.dto.UserServiceInformationDTO"
+            parameterType="com.aotain.cu.serviceapi.dto.UserServiceInformationDTO">
+        select * from IDC_ISMS_BASE_USER_SERVICE
+        WHERE REGID = #{registerId} AND USERID = #{userId}
+        <if test="serviceId!=null">
+            AND SERVICEID != #{serviceId}
+        </if>
+    </select>
+    
+    <insert id="insertUserService" parameterType="com.aotain.cu.serviceapi.model.UserServiceInformation">
+        
+        <selectKey keyProperty="serviceId" resultType="java.lang.Long" order="BEFORE">
+            SELECT SEQ_ISMS_BASE_USER_SERVICEID.NEXTVAL as serviceId FROM dual
+        </selectKey>
+        
+        insert into IDC_ISMS_BASE_USER_SERVICE
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            SERVICEID,
+            <if test="userId != null">
+                USERID,
+            </if>
+            <if test="serviceContent != null">
+                SERVICECONTENT,
+            </if>
+            <if test="registerId != null">
+                REGID,
+            </if>
+            <if test="setmode != null">
+                SETMODE,
+            </if>
+            <if test="serviceType != null">
+                SERVICETYPE,
+            </if>
+            <if test="business != null">
+                BUSINESS ,
+            </if>
+            <if test="regType != null">
+                REGTYPE,
+            </if>
+            <if test="areaCode!=null">
+                SUBORDINATEUNIT_AREACODE,
+            </if>
+            <if test="czlx!=null">
+                CZLX,
+            </if>
+                CREATE_TIME ,
+                UPDATE_TIME,
+            <if test="createUserId != null">
+                CREATE_USERID,
+            </if>
+            <if test="updateUserId != null">
+                UPDATE_USERID,
+            </if>
+            <if test="dealFlag != null">
+                DEAL_FLAG,
+            </if>
+            <if test="infoComplete != null">
+                INFO_COMPLETE,
+            </if>
+            <if test="clientId != null">
+                CLIENTID,
+            </if>
+            <if test="serviceIdStr != null">
+                SERVERIDSTR
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            #{serviceId},
+            <if test="userId != null">
+                #{userId},
+            </if>
+            <if test="serviceContent != null">
+                #{serviceContent},
+            </if>
+            <if test="registerId != null">
+                #{registerId},
+            </if>
+            <if test="setmode != null">
+                #{setmode},
+            </if>
+            <if test="serviceType != null">
+                #{serviceType},
+            </if>
+            <if test="business != null">
+                #{business} ,
+            </if>
+            <if test="regType != null">
+                #{regType},
+            </if>
+            <if test="areaCode!=null">
+                #{areaCode},
+            </if>
+            <if test="czlx!=null">
+                #{czlx},
+            </if>
+                sysdate,
+                sysdate,
+            <if test="createUserId != null">
+                #{createUserId},
+            </if>
+            <if test="updateUserId != null">
+                #{updateUserId},
+            </if>
+            <if test="dealFlag != null">
+                #{dealFlag},
+            </if>
+            <if test="infoComplete != null">
+                #{infoComplete},
+            </if>
+            <if test="clientId != null">
+                #{clientId},
+            </if>
+            <if test="serviceIdStr != null">
+                #{serviceIdStr}
+            </if>
+        </trim>
+    </insert>
+    
+    <insert id="insertUserServiceDomain" parameterType="com.aotain.cu.serviceapi.model.ServiceDomainInformation">
+        <selectKey keyProperty="domainId" resultType="java.lang.Long" order="BEFORE">
+            SELECT SEQ_ISMS_BASE_SERVICE_DOMAINID.NEXTVAL as domainId FROM dual
+        </selectKey>
+        insert into IDC_ISMS_BASE_SERVICE_DOMAIN
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            	DOMAINID,
+            <if test="serviceId != null">
+                SERVICEID,
+            </if>
+            <if test="userId !=null ">
+                USERID,
+            </if>
+            <if test="domainName != null">
+                DOMAINNAME,
+            </if>
+            	CREATE_TIME ,
+            	UPDATE_TIME,
+            <if test="createUserId != null">
+                CREATE_USER_ID ,
+            </if>
+            <if test="updateUserId != null">
+                UPDATE_USERID,
+            </if>
+            <if test="czlx!=null">
+                CZLX,
+            </if>
+            <if test="dealFlag!=null">
+                DEAL_FLAG
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            	#{domainId},
+            <if test="serviceId != null">
+                #{serviceId},
+            </if>
+            <if test="userId != null">
+                #{userId},
+            </if>
+            <if test="domainName != null">
+                #{domainName},
+            </if>
+            	sysdate,
+            	sysdate,
+            <if test="createUserId != null">
+                #{createUserId} ,
+            </if>
+            <if test="updateUserId != null">
+                #{updateUserId},
+            </if>
+            <if test="czlx!=null">
+                #{czlx},
+            </if>
+            <if test="dealFlag!=null">
+                #{dealFlag}
+            </if>
+        </trim>
+    </insert>
+    <resultMap id="baseMap" type="com.aotain.cu.serviceapi.dto.UserServiceInformationDTO">
+        <result column="SERVICEID" jdbcType="DECIMAL" property="serviceId" />
+        <result column="USERID" jdbcType="DECIMAL" property="userId" />
+        <result column="SERVICECONTENT" jdbcType="VARCHAR" property="serviceContent" />
+        <result column="REGID" jdbcType="VARCHAR" property="registerId" />
+        <result column="SETMODE" jdbcType="DECIMAL" property="setmode" />
+        <result column="BUSINESS" jdbcType="DECIMAL" property="business" />
+        <result column="SERVICETYPE" jdbcType="DECIMAL" property="serviceType" />
+        <result column="REGTYPE" jdbcType="DECIMAL" property="regType" />
+        <result column="UNITNAME" jdbcType="VARCHAR" property="unitName" />
+        <result column="CZLX" jdbcType="DECIMAL" property="czlx" />
+        <result column="DEAL_FLAG" jdbcType="DECIMAL" property="dealFlag" />
+        <result column="CREATE_TIME" jdbcType="TIMESTAMP" property="createTime" />
+        <result column="UPDATE_TIME" jdbcType="TIMESTAMP" property="updateTime" />
+        <result column="CREATE_USERID" jdbcType="DECIMAL" property="createUserId" />
+        <result column="INFO_COMPLETE" jdbcType="VARCHAR" property="infoComplete" />
+        <result column="DEL_FLAG" jdbcType="DECIMAL" property="delFlag" />
+        <result column="UPDATE_USERID" jdbcType="TIMESTAMP" property="updateUserId" />
+        <result column="VERIFICATION_RESULT" jdbcType="BLOB" property="verificationResult" />
+        <result column="SUBORDINATEUNIT_AREACODE" jdbcType="VARCHAR" property="areaCode" />
+        <result column="userDealFlag" jdbcType="DECIMAL" property="userDealFlag" />
+        <result column="rptSETMODE" jdbcType="DECIMAL" property="rptSetmode" />
+        <result column="rptServiceId" jdbcType="DECIMAL" property="rptServiceId" />
+        <result column="rptUserId" jdbcType="DECIMAL" property="rptUserId" />
+        <result column="rptServiceContent" jdbcType="VARCHAR" property="rptServiceContent" />
+        <result column="rptRegisterId" jdbcType="VARCHAR" property="rptRegisterId" />
+        <result column="rptBusiness" jdbcType="DECIMAL" property="rptBusiness" />
+        <result column="rptRegType" jdbcType="DECIMAL" property="rptRegType" />
+        <result column="rptAreaCode" jdbcType="VARCHAR" property="rptAreaCode" />
+        <collection property="domainList" column="SERVICEID" select="getDomainList"></collection>
+    </resultMap>
+
+    <resultMap id="BaseDmoanResultMap" type="com.aotain.cu.serviceapi.model.ServiceDomainInformation">
+        <id column="DOMAINID" jdbcType="DECIMAL" property="domainId" />
+        <result column="SERVICEID" jdbcType="DECIMAL" property="serviceId" />
+        <result column="DOMAINNAME" jdbcType="VARCHAR" property="domainName" />
+        <result column="CREATE_TIME" jdbcType="TIMESTAMP" property="createTime" />
+        <result column="UPDATE_TIME" jdbcType="TIMESTAMP" property="updateTime" />
+        <result column="CREATE_USER_ID" jdbcType="DECIMAL" property="createUserId" />
+        <result column="UPDATE_USERID" jdbcType="DECIMAL" property="updateUserId" />
+    </resultMap>
+
+   <select id="getDomainList" parameterType="java.lang.Long" resultMap="BaseDmoanResultMap">
+    select
+    DOMAINID, SERVICEID, DOMAINNAME, CREATE_TIME, UPDATE_TIME, CREATE_USER_ID, UPDATE_USERID
+    from IDC_ISMS_BASE_SERVICE_DOMAIN
+    where SERVICEID = #{serviceId,jdbcType=DECIMAL} and czlx != 3
+  </select>
+    <select id="getUserServiceInfoById" parameterType="long" resultMap="baseMap">
+    select
+    t1.SERVICEID, t1.USERID, t1.SERVICECONTENT, t1.REGID, t1.SETMODE, t1.BUSINESS, t1.REGTYPE, t1.CREATE_TIME,
+    t1.UPDATE_TIME, t1.CREATE_USERID, t1.UPDATE_USERID,t1.CZLX,t1.DEAL_FLAG ,t1.INFO_COMPLETE,
+    t1.DEL_FLAG , t1.SUBORDINATEUNIT_AREACODE ,t3.SETMODE as PRE_SETMODE,t2.UNITNAME,t1.SERVICETYPE,t2.DEAL_FLAG as userDealFlag,
+    t3.SETMODE rptSETMODE
+    from IDC_ISMS_BASE_USER_SERVICE  t1 left join RPT_ISMS_BASE_USER_SERVICE t3 on t1.SERVICEID = t3.SERVICEID ,
+    IDC_ISMS_BASE_USER t2
+    where t1.USERID = t2.USERID
+    AND t1.SERVICEID =#{serviceId}
+    </select>
+    <select id="getUserServiceInfoList" parameterType="com.aotain.cu.serviceapi.dto.UserServiceInformationDTO" resultMap="baseMap">
+    select
+        t1.SERVICEID, 
+        t1.USERID, 
+        t1.SERVICECONTENT, 
+        t1.REGID, 
+        t1.SETMODE, 
+        t1.BUSINESS, 
+        t1.REGTYPE, 
+        t1.CREATE_TIME,
+        t1.UPDATE_TIME, 
+        t1.CREATE_USERID, 
+        t1.UPDATE_USERID,
+        t1.CZLX,
+        t1.DEAL_FLAG ,
+        t1.INFO_COMPLETE,
+        t1.DEL_FLAG , 
+        t1.SUBORDINATEUNIT_AREACODE ,
+        t3.SETMODE as PRE_SETMODE,
+        t2.UNITNAME,
+        t1.SERVICETYPE,
+        t2.DEAL_FLAG as userDealFlag,
+        t3.SETMODE rptSETMODE,
+        t3.SERVICEID as rptServiceId, 
+        t3.USERID as rptUserId, 
+        t3.SERVICECONTENT as rptServiceContent, 
+        t3.REGID as rptRegisterId, 
+        t3.BUSINESS as rptBusiness, 
+        t3.REGTYPE as rptRegType,  
+        t3.SUBORDINATEUNIT_AREACODE as rptAreaCode
+    from IDC_ISMS_BASE_USER_SERVICE  t1 left join RPT_ISMS_BASE_USER_SERVICE t3 on t1.SERVICEID = t3.SERVICEID ,
+          IDC_ISMS_BASE_USER t2
+    where t1.USERID = t2.USERID
+        <if test="userId!=null">
+            AND  t1.USERID = #{userId}
+        </if>
+        <if test="areaCodes != null and areaCodes != '' ">
+          	AND split_areacode(t1.SUBORDINATEUNIT_AREACODE, #{areaCodes}) = 1
+        </if>
+
+        AND t1.USERID in (
+            select userid from idc_isms_base_user usr
+            where nature = 1
+            <if test="authIdentities != null and authIdentities != '' ">
+              and split_areacode(usr.IDENTIFY, #{authIdentities}) = 1
+            </if>
+            <if test="areaCodes != null and areaCodes != '' ">
+              and split_areacode(usr.SUBORDINATEUNIT_AREACODE, #{areaCodes}) = 1
+            </if>
+        )
+
+        <if test="unitName!=null and unitName!=''">
+            AND t2.UNITNAME like '%'||#{unitName}||'%'
+        </if>
+        <if test="serviceContent!=null and serviceContent!=''">
+            AND t1.SERVICECONTENT like '%'||#{serviceContent}||'%'
+        </if>
+        <if test="dealFlag!=null">
+            AND t1.DEAL_FLAG = #{dealFlag}
+        </if>
+        <if test="czlx!=null">
+            AND t1.CZLX = #{czlx}
+        </if>
+        <if test="business!=null">
+            AND t1.BUSINESS = #{business}
+        </if>
+        <if test="setmode!=null">
+            AND t1.SETMODE = #{setmode}
+        </if>
+        <if test="serviceType!=null">
+            AND t1.SERVICETYPE = #{serviceType}
+        </if>
+        <if test="domainName!=null and domainName!=''">
+            AND t1.SERVICEID in ( select t3.SERVICEID from  IDC_ISMS_BASE_SERVICE_DOMAIN t3
+              where t3.DOMAINNAME like '%'||#{domainName}||'%'
+            )
+        </if>
+        <if test="startDate!=null and startDate!=''">
+            AND  #{startDate} &lt;= to_char(t1.UPDATE_TIME,'yyyy-mm-dd')
+        </if>
+        <if test="endDate!=null and endDate!=''">
+            AND  #{endDate} &gt;= to_char(t1.UPDATE_TIME,'yyyy-mm-dd')
+        </if>
+        ORDER  BY t1.UPDATE_TIME DESC
+    </select>
+
+    <update id="updateUserService" parameterType="com.aotain.cu.serviceapi.dto.UserServiceInformationDTO">
+        update IDC_ISMS_BASE_USER_SERVICE  set
+        <if test="serviceContent != null">
+               SERVICECONTENT = #{serviceContent},
+            </if>
+            <if test="registerId != null">
+                 REGID = #{registerId},
+            </if>
+            <if test="setmode != null">
+                SETMODE= #{setmode},
+            </if>
+            <if test="serviceType != null">
+                SERVICETYPE= #{serviceType},
+            </if>
+            <if test="business != null">
+                BUSINESS = #{business},
+            </if>
+            REGTYPE= #{regType,jdbcType=DECIMAL},
+           <!--  <if test="regType != null">
+                REGTYPE= #{regType},
+            </if> -->
+            <if test="areaCode!=null">
+                SUBORDINATEUNIT_AREACODE = #{areaCode},
+            </if>
+            <if test="czlx!=null">
+                CZLX= #{czlx},
+            </if>
+            <if test="updateTime != null">
+                UPDATE_TIME = #{updateTime},
+            </if>
+            <if test="updateUserId != null">
+                UPDATE_USERID = #{updateUserId},
+            </if>
+            <if test="dealFlag != null">
+                DEAL_FLAG = #{dealFlag}
+            </if>
+        WHERE SERVICEID = #{serviceId}
+           <!-- <if test="infoComplete != null">
+                INFO_COMPLETE = #{serviceContent},
+            </if>
+            <if test="clientId != null">
+                CLIENTID = #{serviceContent},
+            </if>
+            <if test="serviceIdStr != null">
+                SERVERIDSTR = #{serviceContent}
+            </if>-->
+    </update>
+    
+	<delete id="deleteByUserId" parameterType="long">
+		delete from idc_isms_base_user_service where userid not in (
+         select userid from idc_isms_base_user_service where czlx=2
+         union
+         select userid from idc_isms_base_user_service where czlx=1 and deal_flag=1 
+  		)  and userid=#{userId}
+	</delete>
+
+    <update id="updateDomainByServiceId" parameterType="com.aotain.cu.serviceapi.model.ServiceDomainInformation">
+        UPDATE   IDC_ISMS_BASE_SERVICE_DOMAIN
+        <set>
+        	<if test="domainName != null">
+            	DOMAINNAME = #{domainName},
+            </if>
+            <if test="updateTime != null">
+            	UPDATE_TIME = #{updateTime},
+            </if>
+            <if test="updateUserId != null">
+            	UPDATE_USERID = #{updateUserId},
+            </if>
+            <if test="czlx != null">
+            	CZLX =#{czlx},
+            </if>
+            <if test="dealFlag != null">
+            	DEAL_FLAG=#{dealFlag},
+            </if>
+        </set>
+      WHERE SERVICEID = #{serviceId}
+    </update>
+
+    <update id="updateUserServiceDomain" parameterType="com.aotain.cu.serviceapi.model.ServiceDomainInformation">
+        UPDATE   IDC_ISMS_BASE_SERVICE_DOMAIN
+        <set>
+            <if test="domainName != null">
+                DOMAINNAME = #{domainName},
+            </if>
+            <if test="updateTime != null">
+                UPDATE_TIME = #{updateTime},
+            </if>
+            <if test="updateUserId != null">
+                UPDATE_USERID = #{updateUserId},
+            </if>
+            <if test="czlx != null">
+                CZLX =#{czlx},
+            </if>
+            <if test="dealFlag != null">
+                DEAL_FLAG=#{dealFlag},
+            </if>
+        </set>
+        WHERE DOMAINID = #{domainId}
+    </update>
+
+	<delete id="deleteServerDomainByUserId" parameterType="long">
+		delete from idc_isms_base_service_domain where userid not in (
+         select userid from idc_isms_base_service_domain where czlx=2
+         union
+         select userid from idc_isms_base_service_domain where czlx=1 and deal_flag=1
+  		)  and userid=#{userId}
+	</delete>
+
+    <delete id="deleteByIds" parameterType="java.util.Map">
+		delete from idc_isms_base_service_domain where SERVICEID =#{serviceId} and czlx = 1 and deal_flag = 0 and DOMAINID in (
+		<foreach collection="ids" separator="," item="item">
+            #{item}
+        </foreach>
+		)
+	</delete>
+	
+	<update id="updateByIds" parameterType="java.util.Map">
+		update idc_isms_base_service_domain set czlx = 3, deal_flag = 0
+		where SERVICEID = #{serviceId} and (czlx = 2 or (czlx = 1 and deal_flag = 1)) and domainid in (
+			<foreach collection="ids" separator="," item="item">
+	            #{item}
+	        </foreach>
+		)
+	</update>
+	
+	<select id="findDomainNameByServiceId" resultType="com.aotain.cu.serviceapi.model.ServiceDomainInformation" parameterType="long">
+        select * from IDC_ISMS_BASE_SERVICE_DOMAIN WHERE SERVICEID = #{serviceId}
+    </select>
+
+    <delete id="deleteServerDomainByServiceId" parameterType="long">
+		delete from idc_isms_base_service_domain where SERVICEID = #{serviceId}
+	</delete>
+
+    <delete id="deleteById" parameterType="long">
+		delete from IDC_ISMS_BASE_USER_SERVICE where SERVICEID =#{serviceId}
+	</delete>
+	<update id="UpdateServerDomainDealFlagAndCzlxByUserId" parameterType="map">
+		update idc_isms_base_service_domain set czlx=#{czlx},deal_flag=#{dealFlag} where userid=#{userId} and userid in (
+         select userid from idc_isms_base_service_domain where czlx=2
+         union
+         select userid from idc_isms_base_service_domain where czlx=1 and deal_flag=1 
+  		 )
+	</update>
+	
+	<update id="UpdateDealFlagAndCzlxByUserId" parameterType="map">
+		update idc_isms_base_user_service set czlx=#{czlx}, deal_flag=#{dealFlag} where userid=#{userId} and userid in (
+         select userid from idc_isms_base_user_service where czlx=2
+         union
+         select userid from idc_isms_base_user_service where czlx=1 and deal_flag=1 
+  		 )
+	</update>
+    
+    <update id="deleteUserServiceLogic" parameterType="java.lang.Long">
+        UPDATE IDC_ISMS_BASE_USER_SERVICE SET CZLX=3,DEAL_FLAG=0 where serviceid in (
+        select serviceid from IDC_ISMS_BASE_USER_SERVICE where USERID=#{userId} and deal_flag=1 and czlx=1
+        union 
+        select serviceid from IDC_ISMS_BASE_USER_SERVICE where USERID=#{userId} and czlx=2
+ )
+    </update>
+    
+    <update id="deleteUserServiceDomainLogic" parameterType="java.lang.Long">
+        UPDATE IDC_ISMS_BASE_SERVICE_DOMAIN SET CZLX=3,DEAL_FLAG=0 where domainid in (
+        select domainid from IDC_ISMS_BASE_SERVICE_DOMAIN where USERID=#{userId} and deal_flag=1 and czlx=1
+        union 
+        select domainid from IDC_ISMS_BASE_SERVICE_DOMAIN where USERID=#{userId} and czlx=2
+ )
+    </update>
+    
+    <select id="getServiceByUserId" parameterType="java.lang.Long" resultType="com.aotain.cu.serviceapi.model.UserServiceInformation">
+        select SERVICEID AS serviceId , USERID AS userId from IDC_ISMS_BASE_USER_SERVICE where USERID=#{userId}
+    </select>
+    
+    <select id="getByUserIdAndSetmode" parameterType="java.lang.Long" resultType="com.aotain.cu.serviceapi.model.UserServiceInformation">
+        select * from IDC_ISMS_BASE_USER_SERVICE where setmode = #{setmode} and USERID = #{userId}
+    </select>
+    
+    <delete id="deleteVirtualByUserId" parameterType="long">
+		delete from idc_isms_base_service_virtual where userid not in (
+         select userid from idc_isms_base_service_virtual where czlx=2
+         union
+         select userid from idc_isms_base_service_virtual where czlx=1 and deal_flag=1 
+  		)  and userid=#{userId}
+	</delete>
+	
+	
+	<delete id="deleteUserServiceWhichNotReport" parameterType="long">
+		delete from IDC_ISMS_BASE_USER_SERVICE where czlx=1 and deal_flag=0 and USERID=#{userId}
+	</delete>
+	
+	<delete id="deleteUserServiceDomainWhichNotReport" parameterType="long">
+		delete from IDC_ISMS_BASE_SERVICE_DOMAIN where czlx=1 and deal_flag=0 and USERID=#{userId}
+	</delete>
+	
+</mapper>

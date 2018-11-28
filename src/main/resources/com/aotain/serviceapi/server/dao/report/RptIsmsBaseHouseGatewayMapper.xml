@@ -1,0 +1,212 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.aotain.serviceapi.server.dao.report.RptIsmsBaseHouseGatewayMapper">
+	<sql id="queryColumns" >
+        a.GATEWAYID as  gatewayId,
+        a.HOUSEID as houseId,
+        a.BANDWIDTH as bandWidth,
+        a.GATEWAYIP as  gatewayIP,
+        a.LINKTYPE as linkType,
+        a.ACCESSUNIT as accessUnit,
+        a.CREATE_TIME as createTime,
+        a.UPDATE_TIME as updateTime,
+        a.CREATE_USERID as createUserId,
+        a.UPDATE_USERID as updateUserId,
+        a.LINKNO as linkNo,
+        b.HOUSENAME as houseName
+    </sql>
+
+	<select id="getDtoList" resultType="com.aotain.cu.serviceapi.dto.HouseGatewayInformationDTO" parameterType="com.aotain.cu.serviceapi.dto.HouseGatewayInformationDTO">
+		SELECT <include refid="queryColumns"/>
+		FROM RPT_ISMS_BASE_HOUSE_GATEWAY a left join RPT_ISMS_BASE_HOUSE b on a.houseid=b.houseid
+		WHERE 1=1
+		<if test="houseId != null">
+            AND a.HOUSEID = #{houseId}
+        </if>
+		<if test="userAuthHouseList != null and userAuthHouseList.size > 0">
+          AND  a.HOUSEID in
+          	<foreach collection="userAuthHouseList" index="index" item="item" open="(" separator="," close=")">
+          		#{item}
+			</foreach> 
+        </if>
+		<!-- AND a.HOUSEID in (
+			select HOUSEID FROM IDC_ISMS_BASE_HOUSE
+			where 1 = 1
+			<if test="authIdentities != null and authIdentities != '' ">
+				and split_areacode(IDENTIFY, #{authIdentities}) = 1
+			</if>
+			<if test="areaCodes != null and areaCodes != '' ">
+				and split_areacode(SUBORDINATEUNIT_AREACODE, #{areaCodes}) = 1
+			</if>
+			<if test="userAuthHouseList != null and userAuthHouseList.size > 0">
+				AND HOUSEID in
+				<foreach collection="userAuthHouseList" index="index" item="item" open="(" separator="," close=")">
+					#{item}
+				</foreach>
+			</if>
+		) -->
+        <if test="areaCodes != null and areaCodes != '' ">
+          AND split_areacode(a.SUBORDINATEUNIT_AREACODE, #{areaCodes}) = 1
+        </if>
+		<if test="linkNo!=null and linkNo!=''">
+			AND a.LINKNO LIKE '%'||#{linkNo}||'%'
+		</if>
+		<if test="gatewayIP!=null and gatewayIP!=''">
+			AND a.GATEWAYIP LIKE '%'||#{gatewayIP}||'%'
+		</if>
+		<if test="houseIDs!=null and houseIDs!=''">
+			AND a.HOUSEID in (${houseIDs})
+		</if>
+		<if test="startDate!=null and startDate!=''">
+			AND  #{startDate} &lt;= to_char(a.UPDATE_TIME,'yyyy-mm-dd')
+		</if>
+		<if test="endDate!=null and endDate!=''">
+			AND  #{endDate} &gt;= to_char(a.UPDATE_TIME,'yyyy-mm-dd')
+		</if>
+		<if test="houseName!=null ">
+			AND b.HOUSENAME  LIKE '%'||#{houseName}||'%'
+		</if>
+		ORDER  BY a.UPDATE_TIME DESC
+	</select>
+
+	<!-- 读一条记录 -->
+	<select id="getData" resultType="com.aotain.cu.serviceapi.model.HouseGatewayInformation" parameterType="com.aotain.cu.serviceapi.model.HouseGatewayInformation">
+		select * from  RPT_ISMS_BASE_HOUSE_GATEWAY
+		where GATEWAYID = #{gatewayId}
+	</select>
+
+	<select id="getCount" resultType="java.lang.Integer" parameterType="com.aotain.cu.serviceapi.model.HouseGatewayInformation">
+		select count(1) from  RPT_ISMS_BASE_HOUSE_GATEWAY
+		where gatewayId = #{gatewayId}
+	</select>
+
+	<!-- 插入记录  -->
+	<insert id="insertData" parameterType="com.aotain.cu.serviceapi.model.HouseGatewayInformation">
+		insert into RPT_ISMS_BASE_HOUSE_GATEWAY
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			GATEWAYID,
+			<if test="houseId != null">
+				HOUSEID,
+			</if>
+			<if test="bandWidth != null">
+				BANDWIDTH,
+			</if>
+			<if test="gatewayIP != null">
+				GATEWAYIP,
+			</if>
+			<if test="linkType != null">
+				LINKTYPE,
+			</if>
+			<if test="accessUnit != null">
+				ACCESSUNIT,
+			</if>
+			<if test="createTime != null">
+				CREATE_TIME,
+			</if>
+			<if test="updateTime != null">
+				UPDATE_TIME,
+			</if>
+			<if test="createUserId != null">
+				CREATE_USERID,
+			</if>
+			<if test="updateUserId != null">
+				UPDATE_USERID,
+			</if>
+			<if test="linkNo != null">
+				LINKNO,
+			</if>
+			<if test="areaCode != null">
+				SUBORDINATEUNIT_AREACODE,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			#{gatewayId},
+			<if test="houseId != null">
+			#{houseId},
+			</if>
+			<if test="bandWidth != null">
+			#{bandWidth},
+			</if>
+			<if test="gatewayIP != null">
+			#{gatewayIP},
+			</if>
+			<if test="linkType != null">
+			#{linkType},
+			</if>
+			<if test="accessUnit != null">
+			#{accessUnit},
+			</if>
+			<if test="createTime != null">
+				#{createTime},
+			</if>
+			<if test="updateTime != null">
+				#{updateTime},
+			</if>
+			<if test="createUserId != null">
+				#{createUserId},
+			</if>
+			<if test="updateUserId != null">
+				#{updateUserId},
+			</if>
+			<if test="linkNo != null">
+				#{linkNo},
+			</if>
+			<if test="areaCode != null">
+				#{areaCode},
+			</if>
+		</trim>
+	</insert>
+
+	<!-- 修改  -->
+	<update id="updateData" parameterType="com.aotain.cu.serviceapi.model.HouseGatewayInformation">
+		update RPT_ISMS_BASE_HOUSE_GATEWAY 
+		<set>
+			<if test="houseId != null">
+				HOUSEID=#{houseId},
+			</if>
+			<if test="bandWidth != null">
+				BANDWIDTH=#{bandWidth},
+			</if>
+			<if test="gatewayIP != null">
+				GATEWAYIP=#{gatewayIP},
+			</if>
+			<if test="linkType != null">
+				LINKTYPE=#{linkType},
+			</if>
+			<if test="accessUnit != null">
+				ACCESSUNIT=#{accessUnit},
+			</if>
+			<if test="createTime != null">
+				CREATE_TIME=#{createTime},
+			</if>
+			<if test="updateTime != null">
+				UPDATE_TIME=#{updateTime},
+			</if>
+			<if test="createUserId != null">
+				CREATE_USERID=#{createUserId},
+			</if>
+			<if test="updateUserId != null">
+				UPDATE_USERID=#{updateUserId},
+			</if>
+			<if test="linkNo != null">
+				LINKNO = #{linkNo},
+			</if>
+			<if test="areaCode != null">
+				SUBORDINATEUNIT_AREACODE=#{areaCode},
+			</if>
+		</set>
+		where GATEWAYID=#{gatewayId}
+	</update>
+
+	<!-- 删除 -->
+	<delete id="deleteData" parameterType="com.aotain.cu.serviceapi.model.HouseGatewayInformation">
+		delete from RPT_ISMS_BASE_HOUSE_GATEWAY 
+		where GATEWAYID=#{gatewayId}
+	</delete>
+
+	<delete id="deleteDataByFK" parameterType="java.lang.Integer">
+		delete from RPT_ISMS_BASE_HOUSE_GATEWAY
+		where HOUSEID=#{fk}
+	</delete>
+</mapper>
